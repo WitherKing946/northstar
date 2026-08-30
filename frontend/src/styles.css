@@ -1287,3 +1287,22 @@ button.ghost:focus-visible {
 .timeline-title { margin: 0 0 6px; font-size: 16px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; }
 .timeline-detail { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); animation: sheetIn 0.2s ease; }
 @media (max-width: 640px) { .timeline { padding-left: 8px; } .timeline-rail { left: 20px; } .timeline-dot { width: 44px; height: 44px; } .timeline-row { gap: 12px; } }
+
+/* Gallery — second design */
+.view-toggle { display: inline-flex; background: var(--bg2); border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 3px; }
+.view-btn { background: transparent; border: 0; padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; font-family: 'Inter', sans-serif; }
+.view-btn.on { background: var(--text); color: #fff; }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; margin-top: 20px; }
+.gallery-card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 22px; box-shadow: 0 4px 16px rgba(60,40,10,0.06); display: flex; flex-direction: column; gap: 10px; transition: all 0.18s; position: relative; overflow: hidden; }
+.gallery-card:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(60,40,10,0.12); border-color: var(--line-strong); }
+.gallery-card.current { border-color: var(--accent); box-shadow: 0 8px 24px rgba(192,122,26,0.14); }
+.gallery-card.done { background: #f8faf8; border-color: #c8e6c9; }
+.gallery-card.locked { opacity: 0.62; background: #fffdf5; }
+.gallery-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.gallery-step { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--muted); background: var(--bg2); border: 1px solid var(--line); padding: 3px 8px; border-radius: 999px; }
+.gallery-check { font-size: 11px; font-weight: 700; color: #fff; background: var(--accent2); padding: 3px 8px; border-radius: 999px; margin-left: auto; }
+.gallery-current { font-size: 11px; font-weight: 700; color: #fff; background: var(--accent); padding: 3px 8px; border-radius: 999px; margin-left: auto; }
+.gallery-lock { font-size: 11px; font-weight: 600; color: var(--muted); margin-left: auto; }
+.gallery-icon { font-size: 36px; line-height: 1; margin: 4px 0; }
+.gallery-card h4 { margin: 0; font-size: 16px; line-height: 1.3; }
+.gallery-actions { margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--line); }

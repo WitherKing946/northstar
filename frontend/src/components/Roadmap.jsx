@@ -175,43 +175,79 @@ export default function Roadmap({ path, onRefresh, onChat }) {
             const isLast = idx === path.nodes.length - 1
             return (
               <div key={n.id} className="flow-wrap">
-                <div className={`flow-box flow-${n.resource.type} ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''}`}>
+                <div
+                  className={`flow-box flow-${n.resource.type} ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''} ${isOpen ? 'open' : ''}`}
+                  onClick={() => {
+                    if (isLocked) return
+                    setOpenId(isOpen ? null : n.id)
+                  }}
+                >
                   <div className="flow-head">
-                    <span className="flow-step">Step {step}</span>
+                    <span className="flow-step">{step}</span>
                     <span className={`type type-${n.resource.type}`}>{meta.label}</span>
-                    {isDone && <span className="flow-badge done">✓ Done</span>}
+                    <span className="muted" style={{ fontSize: '11px', marginLeft: 'auto' }}>
+                      {n.resource.est_hours}h
+                    </span>
+                    {isDone && <span className="flow-badge done">✓</span>}
                     {isCurrent && !isDone && <span className="flow-badge current">Up next</span>}
-                    {isLocked && <span className="flow-badge locked">🔒 Locked</span>}
+                    {isLocked && <span className="flow-badge locked">🔒</span>}
                   </div>
-                  <div className="flow-icon">{meta.icon}</div>
                   <h4>{n.resource.title}</h4>
-                  <p className="reason">{n.reason}</p>
-                  <p className="muted" style={{ fontSize: '12px', margin: '8px 0 0' }}>
-                    {n.resource.est_hours}h · {n.resource.media_type} · Teaches: {n.resource.skills_taught.join(', ')}
-                  </p>
-                  <div className="flow-actions">
-                    {isDone ? (
-                      <div className="stars">
-                        {[1, 2, 3, 4, 5].map((r) => (
-                          <button key={r} className={`star ${feedback[n.id] >= r ? 'on' : ''}`} onClick={() => sendFeedback(n, r)}>
-                            ★
+                  {isOpen ? (
+                    <>
+                      <p className="reason">{n.reason}</p>
+                      <p className="muted" style={{ fontSize: '11px', margin: '6px 0 0' }}>
+                        {n.resource.media_type} · Teaches: {n.resource.skills_taught.join(', ')}
+                      </p>
+                      <div className="flow-actions">
+                        {isDone ? (
+                          <div className="stars">
+                            {[1, 2, 3, 4, 5].map((r) => (
+                              <button
+                                key={r}
+                                className={`star ${feedback[n.id] >= r ? 'on' : ''}`}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  sendFeedback(n, r)
+                                }}
+                              >
+                                ★
+                              </button>
+                            ))}
+                          </div>
+                        ) : isLocked ? (
+                          <span className="muted" style={{ fontSize: '12px' }}>
+                            Complete Step {step - 1} to unlock
+                          </span>
+                        ) : !isStarted ? (
+                          <button
+                            className="primary small"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleStart(n)
+                            }}
+                          >
+                            Start learning →
                           </button>
-                        ))}
+                        ) : (
+                          <button
+                            className="primary small"
+                            disabled={busy === n.id}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              markDone(n)
+                            }}
+                          >
+                            {busy === n.id ? 'Saving…' : 'Mark as finished'}
+                          </button>
+                        )}
                       </div>
-                    ) : isLocked ? (
-                      <span className="muted" style={{ fontSize: '13px' }}>
-                        Complete Step {step - 1} to unlock
-                      </span>
-                    ) : !isStarted ? (
-                      <button className="primary" onClick={() => handleStart(n)}>
-                        Start learning →
-                      </button>
-                    ) : (
-                      <button className="primary" disabled={busy === n.id} onClick={() => markDone(n)}>
-                        {busy === n.id ? 'Saving…' : 'Mark as finished'}
-                      </button>
-                    )}
-                  </div>
+                    </>
+                  ) : (
+                    <span className="quiet-link" style={{ fontSize: '11px', marginTop: '4px', display: 'inline-block' }}>
+                      {isDone ? 'Done · tap to rate' : isLocked ? 'Locked' : isStarted ? 'In progress' : 'Tap to open'}
+                    </span>
+                  )}
                 </div>
                 {!isLast && (
                   <div className="flow-connector" aria-hidden>

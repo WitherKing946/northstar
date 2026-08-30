@@ -1331,3 +1331,13 @@ button.ghost:focus-visible {
 .flow-line.filled { background: linear-gradient(180deg, #2d6a4f 0%, #34d399 100%); }
 .flow-arrow { font-size: 12px; color: #d6c7a8; line-height: 1; margin-top: 2px; }
 .flow-arrow.filled { color: var(--accent2); }
+
+/* compact flowchart override */
+.flowchart { max-width: 500px; }
+.flow-box { max-width: 400px; padding: 14px 16px; border-radius: 12px; }
+.flow-box h4 { font-size: 14px; margin: 0; }
+.flow-icon { display: none; }
+.flow-actions { margin-top: 10px; padding-top: 10px; }
+.flow-connector { padding: 4px 0; }
+.flow-line { height: 20px; }
+.flow-wrap { width: 100%; align-items: center; }

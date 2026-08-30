@@ -129,11 +129,12 @@ export default function App() {
 
   const hasLearner = Boolean(learner)
   const hasPath = Boolean(path)
+  const isOnboarding = !hasLearner
 
   return (
     <>
       <header className="topnav">
-        <div className="topnav-inner">
+        <div className={`topnav-inner ${isOnboarding ? 'onboarding' : ''}`}>
           <div className="brand">
             <div className="brand-mark" aria-hidden>
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -183,9 +184,6 @@ export default function App() {
             >
               <NavIcon name="assistant" /> Assistant
             </button>
-            <button className={`nav-tab ${tab === 'profile' ? 'on' : ''}`} onClick={() => setTab('profile')}>
-              <NavIcon name="profile" /> My profile
-            </button>
           </div>
 
           <div className="nav-right">
@@ -200,13 +198,32 @@ export default function App() {
                 }}
               />
             </div>
-            <div className="user-chip" onClick={() => setTab('profile')} title="View profile">
-              <div className="avatar">AB</div>
-              <div className="user-meta">
-                <span className="user-name">Alicia Bobster</span>
-                <span className="user-role">Intermediate · Data Science</span>
+            {hasLearner ? (
+              <div className="user-chip" onClick={() => setTab('profile')} title="My profile">
+                <div className="avatar">
+                  {learner.name
+                    .split(' ')
+                    .map((w) => w[0])
+                    .join('')
+                    .slice(0, 2)
+                    .toUpperCase()}
+                </div>
+                <div className="user-meta">
+                  <span className="user-name">{learner.name}</span>
+                  <span className="user-role">
+                    {learner.experience_level} · {learner.interests?.[0] || 'New learner'}
+                  </span>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="user-chip" style={{ opacity: 0.6, pointerEvents: 'none' }}>
+                <div className="avatar">?</div>
+                <div className="user-meta">
+                  <span className="user-name">Guest</span>
+                  <span className="user-role">New user</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </header>

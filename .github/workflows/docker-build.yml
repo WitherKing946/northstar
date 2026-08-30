@@ -1,0 +1,32 @@
+name: docker-build
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build -t northstar-backend:test ./backend
+
+      - name: Validate compose file
+        run: docker compose config --quiet
+
+      - name: Boot stack and smoke-test API
+        run: |
+          docker compose up -d --build
+          for i in $(seq 1 30); do
+            curl -fsS http://localhost:8000/health && break || sleep 2
+          done
+          curl -fsS http://localhost:8000/health
+          curl -fsS -X POST http://localhost:8000/learners \
+            -H "Content-Type: application/json" \
+            -d '{"name":"CI","time_budget":3}'
+
+      - name: Cleanup
+        run: docker compose down -v

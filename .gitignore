@@ -1,0 +1,4 @@
+# Local-only AI rules (kept out of the repo; distributed manually)
+AGENTS.md
+backend/AGENTS.md
+frontend/AGENTS.md

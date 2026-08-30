@@ -68,6 +68,29 @@ def test_chat_has_fallback_answer(client):
     assert resp.json()["answer"]
 
 
+def test_list_and_patch_learners(client):
+    learner_id = _new_learner(client, "PatchTest")
+    
+    # Test listing
+    all_learners = client.get("/learners").json()
+    assert any(l["id"] == learner_id for l in all_learners)
+
+    # Test patch
+    patch_resp = client.patch(
+        f"/learners/{learner_id}",
+        json={"name": "Patched Name", "experience_level": "intermediate", "time_budget": 15},
+    )
+    assert patch_resp.status_code == 200
+    data = patch_resp.json()
+    assert data["name"] == "Patched Name"
+    assert data["experience_level"] == "intermediate"
+    assert data["time_budget"] == 15
+
+    # Confirm GET /learners/{id} returns updated data
+    fetched = client.get(f"/learners/{learner_id}").json()
+    assert fetched["name"] == "Patched Name"
+
+
 def test_unknown_learner_404(client):
     assert client.get("/learners/999999").status_code == 404
-    assert client.get("/learners/999999/dashboard").status_code == 404
+    assert client.get("/learners/999999/dashboard").status_code == 404

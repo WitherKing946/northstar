@@ -7,6 +7,7 @@ import Chat from './components/Chat.jsx'
 import Explore from './components/Explore.jsx'
 import Goal from './components/Goal.jsx'
 import Profile from './components/Profile.jsx'
+import Onboarding from './components/Onboarding.jsx'
 
 function NavIcon({ name }) {
   const icons = {
@@ -38,6 +39,12 @@ function NavIcon({ name }) {
         <circle cx="6" cy="7" r="0.9" fill="currentColor" />
         <circle cx="8.5" cy="7" r="0.9" fill="currentColor" />
         <circle cx="11" cy="7" r="0.9" fill="currentColor" />
+      </svg>
+    ),
+    profile: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <circle cx="8" cy="5" r="2.8" stroke="currentColor" strokeWidth="1.3" />
+        <path d="M3.2 13.2C3.2 10.6 5.3 8.5 8 8.5C10.7 8.5 12.8 10.6 12.8 13.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
       </svg>
     ),
   }
@@ -176,6 +183,9 @@ export default function App() {
             >
               <NavIcon name="assistant" /> Assistant
             </button>
+            <button className={`nav-tab ${tab === 'profile' ? 'on' : ''}`} onClick={() => setTab('profile')}>
+              <NavIcon name="profile" /> My profile
+            </button>
           </div>
 
           <div className="nav-right">
@@ -203,76 +213,94 @@ export default function App() {
 
       <div className="app">
         <main className="content">
-          {tab === 'dashboard' && hasLearner && hasPath && (
+          {!hasLearner ? (
+            <Onboarding
+              onComplete={(l, p) => {
+                setLearner(l)
+                setPath(p)
+                setTab('dashboard')
+              }}
+            />
+          ) : (
             <>
-              <div className="hero">
-                <div className="hero-text">
-                  <h1>Welcome back, Alicia</h1>
-                  <p>
-                    Your data science path is {Math.round(((path.nodes.filter((n) => n.status === 'done').length / path.nodes.length) * 100) || 0)}%
-                    complete. Keep the momentum — your next milestone is waiting.
+              {tab === 'dashboard' && hasPath && (
+                <>
+                  <div className="hero">
+                    <div className="hero-text">
+                      <h1>Welcome back, {learner.name.split(' ')[0]}</h1>
+                      <p>
+                        Your data science path is {Math.round(((path.nodes.filter((n) => n.status === 'done').length / path.nodes.length) * 100) || 0)}%
+                        complete. Keep the momentum — your next milestone is waiting.
+                      </p>
+                    </div>
+                    <div className="hero-stats">
+                      <div className="stat">
+                        <div className="stat-num">{path.nodes.length}</div>
+                        <div className="stat-label">Steps</div>
+                      </div>
+                      <div className="stat">
+                        <div className="stat-num">{path.nodes.filter((n) => n.status === 'done').length}</div>
+                        <div className="stat-label">Done</div>
+                      </div>
+                      <div className="stat">
+                        <div className="stat-num">{[...new Set(path.nodes.map((n) => n.milestone))].length}</div>
+                        <div className="stat-label">Milestones</div>
+                      </div>
+                    </div>
+                  </div>
+                  <Dashboard learner={learner} onTab={setTab} refreshKey={path?.version} />
+                </>
+              )}
+
+              {tab === 'dashboard' && !hasPath && (
+                <div className="card">
+                  <p className="muted">Setting up your dashboard…</p>
+                </div>
+              )}
+
+              {tab === 'roadmap' && hasPath && (
+                <Roadmap path={path} onRefresh={refreshPath} onChat={() => setTab('chat')} />
+              )}
+
+              {tab === 'explore' && <Explore searchQuery={search} onSelectDomain={() => setTab('roadmap')} />}
+
+              {tab === 'chat' && hasLearner && <Chat learner={learner} onBack={() => setTab('roadmap')} />}
+
+              {tab === 'goal' && hasLearner && <Goal learner={learner} onPath={gotPath} />}
+
+              {tab === 'profile' && (
+                <div className="card">
+                  <h2>{learner.name}</h2>
+                  <p className="muted">
+                    {learner.experience_level} · {learner.learning_style} · {learner.time_budget}h/week · {(learner.interests || []).join(', ')}
                   </p>
+                  <div style={{ marginTop: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    {(learner.interests || []).map((d) => (
+                      <span key={d} className="chip chip-on">
+                        {d}
+                      </span>
+                    ))}
+                    <span className="chip">{learner.learning_style}</span>
+                    <span className="chip">{learner.experience_level}</span>
+                  </div>
+                  <p className="muted" style={{ marginTop: '16px' }}>
+                    This is your profile. Update your goal or create a new learner to test different paths.
+                  </p>
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                    <button className="primary" onClick={() => setTab('goal')}>
+                      Change goal
+                    </button>
+                    <button className="ghost" onClick={switchToAlicia}>
+                      Reset demo
+                    </button>
+                  </div>
+                  <div style={{ marginTop: '24px', borderTop: '1px solid var(--line)', paddingTop: '16px' }}>
+                    <h3 style={{ margin: '0 0 8px' }}>Create a new learner</h3>
+                    <Profile onCreated={created} />
+                  </div>
                 </div>
-                <div className="hero-stats">
-                  <div className="stat">
-                    <div className="stat-num">{path.nodes.length}</div>
-                    <div className="stat-label">Steps</div>
-                  </div>
-                  <div className="stat">
-                    <div className="stat-num">{path.nodes.filter((n) => n.status === 'done').length}</div>
-                    <div className="stat-label">Done</div>
-                  </div>
-                  <div className="stat">
-                    <div className="stat-num">{[...new Set(path.nodes.map((n) => n.milestone))].length}</div>
-                    <div className="stat-label">Milestones</div>
-                  </div>
-                </div>
-              </div>
-              <Dashboard learner={learner} onTab={setTab} refreshKey={path?.version} />
+              )}
             </>
-          )}
-
-          {tab === 'dashboard' && (!hasLearner || !hasPath) && (
-            <div className="card">
-              <p className="muted">Setting up your dashboard…</p>
-            </div>
-          )}
-
-          {tab === 'roadmap' && hasPath && (
-            <Roadmap path={path} onRefresh={refreshPath} onChat={() => setTab('chat')} />
-          )}
-
-          {tab === 'explore' && <Explore searchQuery={search} onSelectDomain={() => setTab('roadmap')} />}
-
-          {tab === 'chat' && hasLearner && <Chat learner={learner} onBack={() => setTab('roadmap')} />}
-
-          {tab === 'goal' && hasLearner && <Goal learner={learner} onPath={gotPath} />}
-
-          {tab === 'profile' && (
-            <div className="card">
-              <h2>Alicia Bobster</h2>
-              <p className="muted">Intermediate · Visual learner · 8 hrs/week · Data Science</p>
-              <div style={{ marginTop: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                <span className="chip chip-on">Data Science</span>
-                <span className="chip">Visual</span>
-                <span className="chip">Intermediate</span>
-              </div>
-              <p className="muted" style={{ marginTop: '16px' }}>
-                This is a demo profile. Create another learner to test different paths.
-              </p>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
-                <button className="primary" onClick={() => setTab('goal')}>
-                  Change goal
-                </button>
-                <button className="ghost" onClick={switchToAlicia}>
-                  Reset demo
-                </button>
-              </div>
-              <div style={{ marginTop: '24px', borderTop: '1px solid var(--line)', paddingTop: '16px' }}>
-                <h3 style={{ margin: '0 0 8px' }}>Create a new learner</h3>
-                <Profile onCreated={created} />
-              </div>
-            </div>
           )}
         </main>
 

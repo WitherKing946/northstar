@@ -19,7 +19,7 @@ class LLMService:
 
     # -- goal parsing -----------------------------------------------------
     def parse_goal(self, goal_text: str) -> dict[str, Any]:
-        if settings.OPENAI_API_KEY or settings.GROQ_API_KEY or settings.OLLAMA_BASE_URL:
+        if settings.OPENAI_API_KEY or settings.GROQ_API_KEY or settings.GEMINI_API_KEY or settings.OLLAMA_BASE_URL:
             try:
                 llm_parsed = self._llm_parse_goal(goal_text)
                 if llm_parsed and (llm_parsed.get("domain") or llm_parsed.get("skill_targets")):
@@ -89,7 +89,7 @@ class LLMService:
         if not reason:
             return f"Next up: {title} — a solid step toward your goal."
 
-        if settings.OPENAI_API_KEY or settings.GROQ_API_KEY:
+        if settings.OPENAI_API_KEY or settings.GROQ_API_KEY or settings.GEMINI_API_KEY:
             try:
                 prompt = (
                     f"Explain why '{title}' is the next step for a learner whose goal is '{goal}'.\n"
@@ -105,14 +105,14 @@ class LLMService:
         return f"{reason} That's why “{title}” comes next for your goal: {goal_hint}."
 
     def answer_question(self, question: str, goal: str, path_summary: str) -> str:
-        if settings.OPENAI_API_KEY or settings.GROQ_API_KEY or settings.OLLAMA_BASE_URL:
+        if settings.OPENAI_API_KEY or settings.GROQ_API_KEY or settings.GEMINI_API_KEY or settings.OLLAMA_BASE_URL:
             try:
                 prompt = (
-                    "You are North Star AI, a personalized learning assistant.\n"
+                    "You are North Star AI, an expert personalized learning assistant.\n"
                     f"Learner Goal: {goal}\n"
                     f"Current Roadmap Summary: {path_summary}\n\n"
                     f"Learner Question: {question}\n\n"
-                    "Answer concisely, grounded strictly in the learner's goal and prerequisite roadmap."
+                    "Answer helpfully and concisely, grounded in the learner's goal and prerequisite roadmap."
                 )
                 res = self._call_llm_api(prompt, max_tokens=250)
                 if res:
@@ -120,21 +120,53 @@ class LLMService:
             except Exception as e:
                 print(f"[LLMService] Live Q&A failed: {e}")
 
-        # Deterministic fallback answer
-        q = question.lower()
-        if "why" in q and "first" in q:
-            return f"Your first step was chosen because it fills the earliest prerequisite gap for your goal: {goal}. {path_summary.split(chr(10))[0] if path_summary else ''}"
+        # Intelligent Fallback Rules
+        q = question.lower().strip()
+
+        if any(w in q for w in ["hi", "hello", "hey", "greetings"]):
+            return f"Hello! I'm your North Star AI Assistant. I'm here to guide you toward your goal: '{goal}'. How can I help with your roadmap today?"
+
+        if "why" in q and ("first" in q or "start" in q or "order" in q or "begin" in q):
+            first_step = path_summary.split(";")[0] if path_summary else "your first milestone"
+            return f"Your path was ordered by topological prerequisite analysis. {first_step} was selected first because it builds the foundational knowledge required for all downstream topics in your goal '{goal}'."
+
         if "skip" in q:
-            return "You can skip a checkpoint, but finishing it helps us track your real progress. Milestones update automatically when you complete steps."
-        if "stuck" in q or "struggle" in q:
-            return "If you're stuck, try the previous step again or ask for a different media type. Your path re-ranks when you mark a step as finished."
-        return f"For your goal “{goal}”, your current path is: {path_summary[:300]}. Ask about any step and I'll explain why it's there."
+            return "You can skip intermediate resources if you already know the material, but completing checkpoints helps North Star track your true skill level and adapt future milestones."
+
+        if "stuck" in q or "struggle" in q or "hard" in q or "difficult" in q:
+            return "If you're feeling stuck, try reviewing the previous prerequisite step or switching your preferred media style (e.g. video vs hands-on project) in your Profile. Marking completed steps also re-ranks your remaining path."
+
+        if "how long" in q or "time" in q or "hours" in q:
+            return f"Your roadmap is paced based on your weekly time budget and course estimated hours. Each step displays estimated completion hours on your roadmap view."
+
+        if "next" in q or "recommend" in q:
+            first_step = path_summary.split(";")[0] if path_summary else "the first node on your roadmap"
+            return f"Your top recommended action right now is: {first_step}. Open it on your My Path tab and click 'Start learning'."
+
+        return f"For your goal '{goal}', your current roadmap is: {path_summary[:250]}. Feel free to ask about any step, prerequisite ordering, or study strategies!"
 
     # -- HTTP LLM Provider Dispatch ---------------------------------------
     def _call_llm_api(self, prompt: str, max_tokens: int = 200) -> str | None:
         timeout = settings.LLM_TIMEOUT
 
-        # 1. Groq API
+        # 1. Gemini API
+        if settings.GEMINI_API_KEY:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={settings.GEMINI_API_KEY}"
+            payload = {
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"maxOutputTokens": max_tokens, "temperature": 0.3},
+            }
+            with httpx.Client(timeout=timeout) as client:
+                r = client.post(url, json=payload)
+                if r.status_code == 200:
+                    data = r.json()
+                    candidates = data.get("candidates", [])
+                    if candidates and "content" in candidates[0]:
+                        parts = candidates[0]["content"].get("parts", [])
+                        if parts:
+                            return parts[0].get("text", "")
+
+        # 2. Groq API
         if settings.GROQ_API_KEY:
             headers = {"Authorization": f"Bearer {settings.GROQ_API_KEY}", "Content-Type": "application/json"}
             payload = {
@@ -148,7 +180,7 @@ class LLMService:
                 if r.status_code == 200:
                     return r.json()["choices"][0]["message"]["content"]
 
-        # 2. OpenAI API
+        # 3. OpenAI API
         if settings.OPENAI_API_KEY:
             headers = {"Authorization": f"Bearer {settings.OPENAI_API_KEY}", "Content-Type": "application/json"}
             payload = {
@@ -162,7 +194,7 @@ class LLMService:
                 if r.status_code == 200:
                     return r.json()["choices"][0]["message"]["content"]
 
-        # 3. Ollama Local Endpoint
+        # 4. Ollama Local Endpoint
         if settings.OLLAMA_BASE_URL:
             url = f"{settings.OLLAMA_BASE_URL.rstrip('/')}/api/generate"
             payload = {

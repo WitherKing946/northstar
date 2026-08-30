@@ -18,6 +18,7 @@ export const api = {
   createLearner: (p) => request('/learners', { method: 'POST', body: JSON.stringify(p) }),
   setGoal: (id, goal) =>
     request(`/learners/${id}/goals`, { method: 'POST', body: JSON.stringify({ goal }) }),
+  getLearner: (id) => request(`/learners/${id}`),
   generatePath: (id) => request(`/learners/${id}/paths`, { method: 'POST', body: '{}' }),
   getPath: (pid) => request(`/paths/${pid}/nodes`),
   dashboard: (lid) => request(`/learners/${lid}/dashboard`),

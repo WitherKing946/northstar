@@ -4,8 +4,29 @@ export async function ensureDemoLearner() {
   let learner = store.learner
   let path = store.path
 
+  // Validate stored learner still exists in DB (handles DB reset / stale localStorage)
+  if (learner) {
+    try {
+      await api.getLearner(learner.id)
+    } catch (e) {
+      if (String(e.message).includes('404') || String(e.message).toLowerCase().includes('not found')) {
+        store.clear()
+        learner = null
+        path = null
+      }
+    }
+  }
+
   if (learner && path) {
-    return { learner, path }
+    // Validate path still exists
+    try {
+      await api.getPath(path.id)
+      return { learner, path }
+    } catch {
+      store.clear()
+      learner = null
+      path = null
+    }
   }
 
   try {
@@ -25,7 +46,6 @@ export async function ensureDemoLearner() {
       try {
         path = await api.generatePath(learner.id)
       } catch (err) {
-        // If path generation fails or path already exists on backend
         path = null
       }
       if (path) {

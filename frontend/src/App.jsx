@@ -219,7 +219,7 @@ export default function App() {
                   </div>
                 </div>
               </div>
-              <Dashboard learner={learner} onTab={setTab} />
+              <Dashboard learner={learner} onTab={setTab} refreshKey={path?.version} />
             </>
           )}
 

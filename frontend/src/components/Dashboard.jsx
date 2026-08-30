@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api.js'
 
-export default function Dashboard({ learner, onTab }) {
+export default function Dashboard({ learner, onTab, refreshKey }) {
   const [data, setData] = useState(null)
   const [error, setError] = useState('')
 
@@ -14,7 +14,7 @@ export default function Dashboard({ learner, onTab }) {
     return () => {
       alive = false
     }
-  }, [learner.id])
+  }, [learner.id, refreshKey])
 
   if (error) return <p className="error">{error}</p>
   if (!data) return <p className="muted">Loading dashboard…</p>

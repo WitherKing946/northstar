@@ -268,7 +268,7 @@ export default function Roadmap({ path, onRefresh, onChat }) {
                   </div>
                   <button
                     className={isActive ? 'ghost' : 'primary'}
-                    style={{ width: '100%', marginTop: '14px' }}
+                    style={{ marginTop: '14px', alignSelf: 'center' }}
                     disabled={switching !== null}
                     onClick={() => switchBranch(b)}
                   >

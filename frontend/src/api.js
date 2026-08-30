@@ -35,6 +35,11 @@ export const api = {
       body: JSON.stringify({ question, learner_id: learnerId }),
     }),
   resources: () => request('/resources'),
+  enroll: (learnerId, resourceId) =>
+    request(`/learners/${learnerId}/enroll`, {
+      method: 'POST',
+      body: JSON.stringify({ resource_id: resourceId }),
+    }),
 }
 
 export const store = {

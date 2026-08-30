@@ -118,6 +118,58 @@ export default function Dashboard({ learner, onTab, refreshKey }) {
         )}
       </div>
 
+      {/* Ongoing */}
+      <div className="card">
+        <div className="flex-between">
+          <h3 style={{ margin: 0 }}>Ongoing courses</h3>
+          <span className="badge">{(data.ongoing || []).length} enrolled</span>
+        </div>
+        {(data.ongoing || []).length === 0 ? (
+          <p className="muted" style={{ marginTop: '12px' }}>No ongoing courses yet — enroll from Explore to start one.</p>
+        ) : (
+          <div className="explore-grid" style={{ marginTop: '14px' }}>
+            {(data.ongoing || []).map((r) => (
+              <div key={r.id} className="explore-card" style={{ padding: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span className={`type type-${r.type}`}>{r.type}</span>
+                  <span className="muted" style={{ fontSize: '11px' }}>{r.est_hours}h</span>
+                </div>
+                <h4 style={{ margin: '0 0 4px', fontSize: '14px' }}>{r.title}</h4>
+                <p className="muted" style={{ fontSize: '11px', margin: 0 }}>{r.domain} · {r.media_type}</p>
+                <div style={{ marginTop: '10px', height: '4px', background: 'var(--line)', borderRadius: '999px', overflow: 'hidden' }}>
+                  <div style={{ width: '45%', height: '100%', background: 'var(--accent)', borderRadius: '999px' }} />
+                </div>
+                <p className="muted" style={{ fontSize: '11px', marginTop: '6px' }}>In progress — continue in My Path</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Recommended */}
+      <div className="card">
+        <div className="flex-between">
+          <h3 style={{ margin: 0 }}>Recommended for you</h3>
+          <button className="ghost small" onClick={() => onTab('explore')}>Browse all</button>
+        </div>
+        <div className="explore-grid" style={{ marginTop: '14px' }}>
+          {(data.recommended || []).map((r) => (
+            <div key={r.id} className="explore-card" style={{ padding: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span className={`type type-${r.type}`}>{r.type}</span>
+                <span className="muted" style={{ fontSize: '11px' }}>{r.est_hours}h</span>
+              </div>
+              <h4 style={{ margin: '0 0 4px', fontSize: '14px' }}>{r.title}</h4>
+              <p className="muted" style={{ fontSize: '11px', margin: 0 }}>{r.domain} · Teaches: {r.skills_taught.slice(0, 2).join(', ')}</p>
+              <button className="ghost small" style={{ marginTop: '10px', width: '100%' }} onClick={() => onTab('explore')}>
+                View in Explore
+              </button>
+            </div>
+          ))}
+          {(data.recommended || []).length === 0 && <p className="muted">No recommendations yet — set a goal first.</p>}
+        </div>
+      </div>
+
       {/* Skills */}
       <div className="card">
         <h3 style={{ marginTop: 0 }}>Skills on your radar</h3>

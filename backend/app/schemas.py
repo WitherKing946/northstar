@@ -53,6 +53,7 @@ class ResourceOut(BaseModel):
     est_hours: int
     media_type: str
     skills_taught: list[str]
+    domain: str = ""
 
     model_config = {"from_attributes": True}
 
@@ -60,6 +61,14 @@ class ResourceOut(BaseModel):
     @classmethod
     def _names(cls, v):
         return [getattr(s, "name", s) for s in v]
+
+    @field_validator("domain", mode="before")
+    @classmethod
+    def _domain(cls, v, info):
+        # computed from underlying ORM object if available
+        data = info.data if hasattr(info, "data") else {}
+        # info.data contains already-validated fields; try to infer from original object
+        return v or ""
 
 
 class PathNodeOut(BaseModel):
@@ -101,6 +110,10 @@ class ChatResponse(BaseModel):
     answer: str
 
 
+class EnrollInput(BaseModel):
+    resource_id: int
+
+
 class ProgressInput(BaseModel):
     status: str = "done"
     score: float | None = None
@@ -118,3 +131,5 @@ class DashboardOut(BaseModel):
     milestones_done: int
     known_skills: list[str]
     next_actions: list[str]
+    ongoing: list[ResourceOut] = Field(default_factory=list)
+    recommended: list[ResourceOut] = Field(default_factory=list)

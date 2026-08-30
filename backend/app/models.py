@@ -77,6 +77,10 @@ class Resource(Base):
 
     skills_taught: Mapped[list[Skill]] = relationship(secondary=resource_skills)
 
+    @property
+    def domain(self) -> str:
+        return self.skills_taught[0].domain if self.skills_taught else ""
+
     direct_prereqs: Mapped[list[Resource]] = relationship(
         secondary=resource_prereqs,
         primaryjoin=id == resource_prereqs.c.resource_id,

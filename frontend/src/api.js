@@ -1,3 +1,5 @@
+import { supabase } from './supabase.js'
+
 const BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
 
 async function request(url, opts = {}) {
@@ -14,8 +16,19 @@ async function request(url, opts = {}) {
   return body
 }
 
+async function syncLearnerToSupabase(learner) {
+  if (!supabase || !learner?.id) return
+  try {
+    await supabase.from('learners').upsert({ id: learner.id, name: learner.name, goal: learner.goal })
+  } catch {}
+}
+
 export const api = {
-  createLearner: (p) => request('/learners', { method: 'POST', body: JSON.stringify(p) }),
+  createLearner: async (p) => {
+    const learner = await request('/learners', { method: 'POST', body: JSON.stringify(p) })
+    syncLearnerToSupabase(learner)
+    return learner
+  },
   setGoal: (id, goal) =>
     request(`/learners/${id}/goals`, { method: 'POST', body: JSON.stringify({ goal }) }),
   getLearner: (id) => request(`/learners/${id}`),

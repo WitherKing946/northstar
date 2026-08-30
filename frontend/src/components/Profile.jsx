@@ -60,28 +60,12 @@ export default function Profile({ onCreated }) {
   async function saveEdits(e) {
     e.preventDefault()
     if (!learner) return
-    setBusy(true)
-    setError('')
-    setSuccess('')
-    try {
-      const patch = {
-        name: form.name.trim() || learner.name,
-        interests: form.interests,
-        experience_level: form.experience_level,
-        learning_style: form.learning_style,
-        time_budget: Number(form.time_budget) || 5,
-      }
-      const updated = await api.updateLearner(learner.id, patch)
-      localStorage.setItem('ns.learner', JSON.stringify(updated))
-      setSuccess('Profile updated in DB!')
-      setTimeout(() => window.location.reload(), 600)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBusy(false)
-    }
+    // For demo we just update localStorage; backend has no PATCH for learner
+    const updated = { ...learner, ...form, name: form.name || learner.name }
+    localStorage.setItem('ns.learner', JSON.stringify(updated))
+    setSuccess('Profile updated locally (demo).')
+    setTimeout(() => window.location.reload(), 600)
   }
-
 
   const isEditing = Boolean(learner)
 
@@ -133,7 +117,7 @@ export default function Profile({ onCreated }) {
 
       <div className="card">
         <h2>{isEditing ? 'Edit profile' : 'Create profile'}</h2>
-        <p className="muted">{isEditing ? 'Changes persist to the backend database.' : 'Create a new learner to test different paths.'}</p>
+        <p className="muted">{isEditing ? 'Changes save locally for this demo (no backend patch yet).' : 'Create a new learner to test different paths.'}</p>
 
         <form onSubmit={isEditing ? saveEdits : create}>
           <label>
@@ -199,7 +183,7 @@ export default function Profile({ onCreated }) {
       <div className="card" style={{ background: 'var(--bg2)' }}>
         <h3 style={{ marginTop: 0 }}>Account</h3>
         <p className="muted" style={{ fontSize: '12px' }}>
-          Demo mode — no passwords. Learners are profiles stored in the DB; profile edits persist via PATCH /learners/{`{id}`}.
+          Demo mode — no passwords. Learners are profiles stored in the DB; switching just changes localStorage. Add a backend PATCH /learners/{`{id}`} later for true persistence.
         </p>
         <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
           <span className="badge">DB: {localStorage.getItem('ns.learner') ? 'connected' : 'empty'}</span>

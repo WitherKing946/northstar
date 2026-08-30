@@ -1366,3 +1366,56 @@ button.ghost:focus-visible {
 .branch-step.done .branch-step-dot { background: var(--accent2); color: #fff; border-color: var(--accent2); }
 .branch-step.next .branch-step-dot { background: var(--accent); color: #fff; border-color: var(--accent); }
 @media (max-width: 720px) { .branch-grid { grid-template-columns: 1fr; } .branch-svg-wrap { display: none; } }
+
+/* Flowchart redesign — bent, branching, clean */
+.flow-redesign { max-width: 760px; margin: 24px auto 0; background: linear-gradient(180deg, #fffef8 0%, #fdf8f0 100%); border: 1px solid rgba(237,224,204,0.7); border-radius: 24px; padding: 28px 20px 24px; }
+.flow-intro { text-align: center; margin-bottom: 16px; }
+.flow-start { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.flow-start-pill { background: #1a1a18; color: #ffdf8a; font-size: 12px; font-weight: 800; letter-spacing: 0.7px; text-transform: uppercase; padding: 8px 16px; border-radius: 999px; border: 2px solid #ffdf8a; }
+.flow-start-sub { font-size: 12px; max-width: 420px; text-align: center; }
+.flow-bend { position: relative; height: 84px; margin: 4px 0 0; display: flex; align-items: flex-end; justify-content: center; }
+.flow-bend-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.flow-bend-label { position: relative; z-index: 1; background: var(--card); border: 1.5px solid #1a1a18; color: var(--text); font-size: 11px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; padding: 6px 12px; border-radius: 8px; transform: rotate(-0.5deg); }
+.flow-branches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 12px; }
+.flow-branch { background: var(--card); border: 1.5px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; transition: all 0.18s; }
+.flow-branch.active { border-color: var(--accent); box-shadow: 0 8px 24px rgba(192,122,26,0.12); background: #fffef8; }
+.flow-branch:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(60,40,10,0.08); }
+.flow-branch-head { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-bottom: 12px; border-bottom: 1px dashed var(--line); margin-bottom: 12px; text-align: center; border-top: 3px solid transparent; border-radius: 8px 8px 0 0; margin: -16px -16px 12px; padding: 14px 16px 12px; }
+.flow-branch-head h4 { margin: 0; font-size: 13px; font-weight: 800; }
+.flow-branch-icon { font-size: 24px; }
+.flow-branch-badge { font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; background: var(--accent2); color: #fff; padding: 3px 8px; border-radius: 999px; }
+.flow-branch-track { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.flow-step { display: flex; align-items: center; gap: 10px; font-size: 12.5px; padding: 8px 10px; border-radius: 10px; border: 1px solid transparent; background: var(--bg2); }
+.flow-step.done { background: #f0fdf4; border-color: #c8e6c9; text-decoration: line-through; opacity: 0.9; }
+.flow-step.next { background: #fff7e8; border-color: #fde68a; font-weight: 600; }
+.flow-step-dot { width: 22px; height: 22px; border-radius: 50%; background: var(--card); border: 1px solid var(--line); display: grid; place-items: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.flow-step.done .flow-step-dot { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+.flow-step.next .flow-step-dot { background: var(--accent); color: #fff; border-color: var(--accent); }
+.flow-step-next { margin-left: auto; font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.4px; }
+.flow-merge { display: flex; flex-direction: column; align-items: center; margin-top: 12px; height: 84px; position: relative; }
+.flow-merge-pill { position: relative; z-index: 1; background: var(--accent2); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding: 7px 14px; border-radius: 999px; margin-top: auto; }
+@media (max-width: 760px) { .flow-branches { grid-template-columns: 1fr; } .flow-bend, .flow-merge { display: none; } }
+
+/* Polish — flowchart */
+.flow-redesign { box-shadow: 0 12px 40px rgba(60,40,10,0.06); }
+.flow-start-pill { box-shadow: 0 4px 14px rgba(0,0,0,0.12); letter-spacing: 0.8px; }
+.flow-bend-label { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.flow-branch { box-shadow: 0 2px 12px rgba(60,40,10,0.04); }
+.flow-branch.active { box-shadow: 0 10px 28px rgba(192,122,26,0.14); }
+.flow-step { transition: all 0.15s; }
+.flow-step:hover { transform: translateX(2px); border-color: var(--line-strong); }
+.flow-branch-track { gap: 9px; }
+
+/* Wider My Path + spaced flowchart */
+.app { max-width: 1280px; }
+.timeline { max-width: 960px; }
+.timeline-card { padding: 22px; }
+.flow-redesign { max-width: 1040px; padding: 32px 28px 32px; }
+.branch-map { max-width: 1040px; }
+.flow-branches, .branch-grid { gap: 20px; }
+.flow-branch, .branch-col { padding: 20px; }
+.flow-box { max-width: 440px; }
+.journey-map { max-width: 900px; }
+/* Less wonky buttons — centered, not full-width */
+.flow-branch button, .branch-col button, .flow-box button { width: auto; min-width: 140px; align-self: center; }
+.flow-branch button.primary, .branch-col button.primary { width: auto; }

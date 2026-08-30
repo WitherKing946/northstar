@@ -16,13 +16,13 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: sqlite:////data/northstar.db
+      DATABASE_URL: sqlite:////app/data/northstar.db
       OLLAMA_BASE_URL: http://ollama:11434
       LLM_MODEL: qwen3:4b
       LLM_TIMEOUT: "30"
       PORT: "8000"
     volumes:
-      - db_data:/data
+      - db_data:/app/data
 
   ollama:
     image: ollama/ollama:latest

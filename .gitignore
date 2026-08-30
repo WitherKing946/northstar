@@ -1,4 +1,6 @@
-# Local-only AI rules (kept out of the repo; distributed manually)
+# Local-only AI rules & environment secrets
 AGENTS.md
 backend/AGENTS.md
 frontend/AGENTS.md
+.env
+*.env

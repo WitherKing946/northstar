@@ -1,13 +1,10 @@
-# North Star demo stack
+# North Star stack — demo + production DB
 #
-# Default: `docker compose up --build` -> backend only (SQLite file volume).
-# Add a local free LLM:
-#   `docker compose --profile llm up --build`
-#   then pull the model once: `docker compose exec ollama ollama pull qwen3:4b`
+# Default (demo, no deps): `docker compose up --build` -> backend with SQLite
+# Embedded AI is now inside the app — no Ollama container needed.
 #
-# The backend has a deterministic fallback, so it runs fine with no Ollama at all.
-# For a hosted free LLM later, set OLLAMA_BASE_URL/LLM_MODEL to any
-# OpenAI-compatible endpoint (e.g. Groq, OpenRouter) and remove the profile.
+# With PostgreSQL: `docker compose --profile db up --build`
+#   then set DATABASE_URL=postgresql+psycopg://northstar:northstar@db:5432/northstar
 
 services:
   backend:
@@ -16,26 +13,33 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: sqlite:////app/data/northstar.db
-      OLLAMA_BASE_URL: http://ollama:11434
-      LLM_MODEL: qwen3:4b
-      LLM_TIMEOUT: "30"
+      DATABASE_URL: ${DATABASE_URL:-sqlite:////app/data/northstar.db}
       PORT: "8000"
     volumes:
       - db_data:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
+        required: false
 
-  ollama:
-    image: ollama/ollama:latest
-    profiles: ["llm"]
+  db:
+    image: postgres:16-alpine
+    profiles: ["db"]
     restart: unless-stopped
+    environment:
+      POSTGRES_USER: northstar
+      POSTGRES_PASSWORD: northstar
+      POSTGRES_DB: northstar
     volumes:
-      - ollama_data:/root/.ollama
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     healthcheck:
-      test: ["CMD", "ollama", "list"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: ["CMD-SHELL", "pg_isready -U northstar -d northstar"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
 volumes:
   db_data:
-  ollama_data:
+  pg_data:

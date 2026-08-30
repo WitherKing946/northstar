@@ -33,6 +33,7 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ question, learner_id: learnerId }),
     }),
+  resources: () => request('/resources'),
 }
 
 export const store = {

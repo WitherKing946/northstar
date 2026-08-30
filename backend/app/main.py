@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from . import seed_catalog
 from .database import SessionLocal, init_db
-from .api import chat, dashboard, learners, paths
+from .api import chat, dashboard, learners, paths, resources
 
 
 @asynccontextmanager
@@ -35,6 +35,7 @@ app.include_router(learners.router)
 app.include_router(paths.router)
 app.include_router(chat.router)
 app.include_router(dashboard.router)
+app.include_router(resources.router)
 
 
 @app.get("/health")

@@ -5,3 +5,5 @@ pydantic
 networkx
 httpx
 pytest
+psycopg[binary]
+alembic

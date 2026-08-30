@@ -15,6 +15,8 @@ export default function Roadmap({ path, onRefresh, onChat }) {
   const [started, setStarted] = useState({})
 
   const firstUnfinished = path.nodes.findIndex((n) => n.status !== 'done')
+  const doneCount = path.nodes.filter((n) => n.status === 'done').length
+  const fillPct = path.nodes.length ? (doneCount / path.nodes.length) * 100 : 0
 
   async function markDone(node) {
     setBusy(node.id)
@@ -42,15 +44,13 @@ export default function Roadmap({ path, onRefresh, onChat }) {
     } catch {}
   }
 
-  const milestones = [...new Set(path.nodes.map((n) => n.milestone))].sort((a, b) => a - b)
-
   return (
     <div>
       <div className="card">
         <div className="flex-between">
           <div>
-            <h2>Your learning path</h2>
-            <p className="muted">Tap an island to start — milestones unlock automatically as you finish.</p>
+            <h2>Your path</h2>
+            <p className="muted">Tap an island to begin — progress is tracked automatically.</p>
           </div>
           <button className="ghost" onClick={() => onChat()}>
             Ask assistant
@@ -60,97 +60,83 @@ export default function Roadmap({ path, onRefresh, onChat }) {
       </div>
 
       <div className="duolingo-path">
-        <div className="path-spine" aria-hidden />
-        {milestones.map((m) => {
-          const group = path.nodes.filter((n) => n.milestone === m)
-          const done = group.filter((n) => n.status === 'done').length
+        <div className="path-spine" aria-hidden>
+          <div className="path-spine-fill" style={{ height: `${fillPct}%` }} />
+        </div>
+
+        {path.nodes.map((n, idx) => {
+          const isDone = n.status === 'done'
+          const isCurrent = idx === firstUnfinished
+          const isLocked = idx > firstUnfinished && firstUnfinished !== -1
+          const isOpen = openId === n.id
+          const isStarted = started[n.id]
+          const offsets = [-72, 72, 44, -44, 0]
+          const offset = offsets[idx % offsets.length]
+
           return (
-            <div key={m} className="milestone-segment">
-              <div className="milestone-banner">
-                <span className="milestone-title">Milestone {m}</span>
-                <span className="milestone-count">
-                  {done}/{group.length}
-                </span>
-                <div className="milestone-bar">
-                  <div className="milestone-bar-fill" style={{ width: `${(done / group.length) * 100}%` }} />
-                </div>
-              </div>
+            <div key={n.id} className="island-wrap" style={{ '--offset': `${offset}px` }}>
+              <button
+                className={`island ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''} type-${n.resource.type}`}
+                onClick={() => {
+                  if (isLocked) return
+                  setOpenId(isOpen ? null : n.id)
+                }}
+                disabled={isLocked}
+                aria-label={n.resource.title}
+                aria-expanded={isOpen}
+                title={isLocked ? 'Complete the previous island to unlock' : n.resource.title}
+              >
+                <span className="island-icon">{TYPE_ICON[n.resource.type] || '●'}</span>
+                {isDone && <span className="island-check">✓</span>}
+                {isCurrent && !isDone && <span className="island-pulse" aria-hidden />}
+              </button>
+              <span className={`island-label ${isLocked ? 'muted' : ''}`}>{n.resource.title}</span>
+              <span className="island-sub muted">{n.resource.est_hours}h · {n.resource.media_type}</span>
 
-              {group.map((n) => {
-                const idx = path.nodes.indexOf(n)
-                const isDone = n.status === 'done'
-                const isCurrent = idx === firstUnfinished
-                const isLocked = idx > firstUnfinished && firstUnfinished !== -1
-                const isOpen = openId === n.id
-                const isStarted = started[n.id]
-                // zig-zag offset
-                const offsets = [-72, 72, 36, -36, 0]
-                const offset = offsets[idx % offsets.length]
-
-                return (
-                  <div key={n.id} className="island-wrap" style={{ '--offset': `${offset}px` }}>
-                    <button
-                      className={`island ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''} type-${n.resource.type}`}
-                      onClick={() => {
-                        if (isLocked) return
-                        setOpenId(isOpen ? null : n.id)
-                      }}
-                      disabled={isLocked}
-                      title={isLocked ? 'Complete the previous step to unlock' : n.resource.title}
-                    >
-                      <span className="island-icon">{TYPE_ICON[n.resource.type] || '●'}</span>
-                      {isDone && <span className="island-check">✓</span>}
-                    </button>
-                    <span className={`island-label ${isLocked ? 'muted' : ''}`}>{n.resource.title}</span>
-                    <span className="island-sub muted">{n.resource.est_hours}h · {n.resource.media_type}</span>
-
-                    {isOpen && (
-                      <div className="island-card">
-                        <h4>{n.resource.title}</h4>
-                        <p className="reason">{n.reason}</p>
-                        <p className="muted" style={{ fontSize: '12px' }}>
-                          Teaches: {n.resource.skills_taught.join(', ')}
-                        </p>
-                        <div className="node-actions" style={{ marginTop: '12px' }}>
-                          {isDone ? (
-                            <>
-                              <span className="done-tag">Completed</span>
-                              <div className="stars">
-                                {[1, 2, 3, 4, 5].map((r) => (
-                                  <button
-                                    key={r}
-                                    className={`star ${feedback[n.id] >= r ? 'on' : ''}`}
-                                    onClick={() => sendFeedback(n, r)}
-                                  >
-                                    ★
-                                  </button>
-                                ))}
-                              </div>
-                            </>
-                          ) : isLocked ? (
-                            <span className="muted" style={{ fontSize: '13px' }}>
-                              Locked — finish the previous island first
-                            </span>
-                          ) : !isStarted ? (
-                            <button className="primary small accent" onClick={() => handleStart(n)}>
-                              Start learning →
+              {isOpen && (
+                <div className="island-card">
+                  <h4>{n.resource.title}</h4>
+                  <p className="reason">{n.reason}</p>
+                  <p className="muted" style={{ fontSize: '12px' }}>
+                    Teaches: {n.resource.skills_taught.join(', ')}
+                  </p>
+                  <div className="node-actions" style={{ marginTop: '14px' }}>
+                    {isDone ? (
+                      <>
+                        <span className="done-tag">Completed</span>
+                        <div className="stars">
+                          {[1, 2, 3, 4, 5].map((r) => (
+                            <button
+                              key={r}
+                              className={`star ${feedback[n.id] >= r ? 'on' : ''}`}
+                              onClick={() => sendFeedback(n, r)}
+                            >
+                              ★
                             </button>
-                          ) : (
-                            <button className="primary small" disabled={busy === n.id} onClick={() => markDone(n)}>
-                              {busy === n.id ? 'Saving…' : 'Mark as finished'}
-                            </button>
-                          )}
+                          ))}
                         </div>
-                        {!isDone && !isLocked && !isStarted && (
-                          <p className="muted" style={{ marginTop: '8px', fontSize: '11px' }}>
-                            Dummy resource — no external link. Finish to unlock the next island.
-                          </p>
-                        )}
-                      </div>
+                      </>
+                    ) : isLocked ? (
+                      <span className="muted" style={{ fontSize: '13px' }}>
+                        Locked — finish the island above first
+                      </span>
+                    ) : !isStarted ? (
+                      <button className="primary small accent" onClick={() => handleStart(n)}>
+                        Start learning →
+                      </button>
+                    ) : (
+                      <button className="primary small" disabled={busy === n.id} onClick={() => markDone(n)}>
+                        {busy === n.id ? 'Saving…' : 'Mark as finished'}
+                      </button>
                     )}
                   </div>
-                )
-              })}
+                  {!isDone && !isLocked && !isStarted && (
+                    <p className="muted" style={{ marginTop: '8px', fontSize: '11px' }}>
+                      Dummy resource — finish to grow and unlock the next island.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           )
         })}

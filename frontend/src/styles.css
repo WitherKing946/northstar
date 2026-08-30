@@ -626,15 +626,22 @@ button.ghost:focus-visible {
   left: 50%;
   top: 24px;
   bottom: 24px;
-  width: 8px;
-  background: repeating-linear-gradient(
-    to bottom,
-    #e8ddd2 0 16px,
-    transparent 16px 28px
-  );
+  width: 10px;
+  background: repeating-linear-gradient(to bottom, #e8ddd2 0 16px, transparent 16px 28px);
   transform: translateX(-50%);
   border-radius: 999px;
   opacity: 0.7;
+  overflow: hidden;
+}
+
+.path-spine-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, #2d6a4f 0%, #34d399 100%);
+  border-radius: 999px;
+  transition: height 0.6s ease;
 }
 
 .milestone-segment {
@@ -767,6 +774,26 @@ button.ghost:focus-visible {
     0 8px 0 var(--accent),
     0 12px 28px rgba(192, 122, 26, 0.2);
   animation: islandPulse 2.2s ease-in-out infinite;
+}
+
+.island-pulse {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(192, 122, 26, 0.35);
+  animation: pulseRing 1.8s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
 }
 
 .island.locked {

@@ -47,11 +47,20 @@ function NavIcon({ name }) {
 export default function App() {
   const [learner, setLearner] = useState(store.learner)
   const [path, setPath] = useState(store.path)
-  const [tab, setTab] = useState(store.learner ? 'dashboard' : 'dashboard')
-  const [loading, setLoading] = useState(!store.learner)
-  const [search, setSearch] = useState('')
+  const [tab, setTab] = useState(store.learner ? 'dashboard' : 'profile')
+  const [loading, setLoading] = useState(false)
+  const [search, setSearch] = useState(() => localStorage.getItem('ns.search') || '')
 
   useEffect(() => {
+    localStorage.setItem('ns.search', search)
+  }, [search])
+
+  // New user: if no learner, stay on profile onboarding instead of auto-creating Alicia
+  useEffect(() => {
+    if (!store.learner) {
+      setTab('profile')
+      return
+    }
     let cancelled = false
     async function boot() {
       setLoading(true)
@@ -233,7 +242,7 @@ export default function App() {
             <Roadmap path={path} onRefresh={refreshPath} onChat={() => setTab('chat')} />
           )}
 
-          {tab === 'explore' && <Explore onSelectDomain={() => setTab('roadmap')} />}
+          {tab === 'explore' && <Explore searchQuery={search} onSelectDomain={() => setTab('roadmap')} />}
 
           {tab === 'chat' && hasLearner && <Chat learner={learner} onBack={() => setTab('roadmap')} />}
 

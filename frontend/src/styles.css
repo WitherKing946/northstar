@@ -183,8 +183,15 @@ code,
   background: var(--bg);
   border: 1px solid var(--line);
   border-radius: 999px;
-  padding: 7px 14px;
-  width: 220px;
+  padding: 6px 12px;
+  width: 160px;
+  transition: all 0.15s;
+}
+
+.search-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  width: 200px;
 }
 
 .search-box input {
@@ -1000,16 +1007,18 @@ button.ghost:focus-visible {
   background: var(--bg2);
   border: 1px solid var(--line);
   border-radius: 14px;
-  padding: 20px;
+  padding: 22px 16px 18px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  justify-content: flex-start;
+  gap: 6px;
+  min-height: 148px;
 }
 
 .dash-num {
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 800;
   color: var(--text);
   line-height: 1;
@@ -1018,9 +1027,15 @@ button.ghost:focus-visible {
 
 .dash-tile .muted {
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.35;
   font-size: 12px;
   letter-spacing: 0.2px;
+}
+
+.dash-tile .progress,
+.dash-tile > div:last-child {
+  margin-top: auto;
+  width: 100%;
 }
 
 .progress {
@@ -1234,7 +1249,7 @@ button.ghost:focus-visible {
   }
 }
 
-/* Journey map — complete redesign (replaces milestone banners) */
+/* Journey map ï¿½ complete redesign (replaces milestone banners) */
 .path-header { margin-bottom: 20px; }
 .path-progress { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
 .path-progress-track { flex: 1; height: 8px; background: #f0e6d3; border-radius: 999px; overflow: hidden; }
@@ -1267,7 +1282,7 @@ button.ghost:focus-visible {
 .journey-sheet h4 { margin: 0 0 8px; font-size: 17px; line-height: 1.3; }
 @media (max-width: 640px) { .journey-node:nth-child(odd), .journey-node:nth-child(even), .journey-node:nth-child(3n) { transform: none; } .journey-map { padding: 24px 16px 36px; } .journey-island { width: 80px; height: 80px; } }
 
-/* Timeline — complete redesign (no islands/circles) */
+/* Timeline ï¿½ complete redesign (no islands/circles) */
 .timeline { position: relative; max-width: 720px; margin: 28px auto 0; padding: 12px 0 32px 0; }
 .timeline-rail { position: absolute; left: 28px; top: 12px; bottom: 12px; width: 4px; background: #ede0cc; border-radius: 999px; overflow: hidden; }
 .timeline-rail-fill { position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(180deg, #2d6a4f 0%, #34d399 100%); border-radius: 999px; transition: height 0.6s ease; }
@@ -1288,7 +1303,7 @@ button.ghost:focus-visible {
 .timeline-detail { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); animation: sheetIn 0.2s ease; }
 @media (max-width: 640px) { .timeline { padding-left: 8px; } .timeline-rail { left: 20px; } .timeline-dot { width: 44px; height: 44px; } .timeline-row { gap: 12px; } }
 
-/* Gallery — second design */
+/* Gallery ï¿½ second design */
 .view-toggle { display: inline-flex; background: var(--bg2); border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 3px; }
 .view-btn { background: transparent; border: 0; padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; font-family: 'Inter', sans-serif; }
 .view-btn.on { background: var(--text); color: #fff; }
@@ -1307,7 +1322,7 @@ button.ghost:focus-visible {
 .gallery-card h4 { margin: 0; font-size: 16px; line-height: 1.3; }
 .gallery-actions { margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--line); }
 
-/* Flowchart — second design (replaces gallery) */
+/* Flowchart ï¿½ second design (replaces gallery) */
 .flowchart { max-width: 560px; margin: 24px auto 0; display: flex; flex-direction: column; align-items: center; }
 .flow-wrap { display: flex; flex-direction: column; align-items: center; width: 100%; }
 .flow-box { width: 100%; max-width: 460px; background: var(--card); border: 2px solid var(--line); border-radius: 16px; padding: 22px; box-shadow: 0 4px 16px rgba(60,40,10,0.06); position: relative; transition: all 0.18s; text-align: left; }
@@ -1342,7 +1357,7 @@ button.ghost:focus-visible {
 .flow-line { height: 20px; }
 .flow-wrap { width: 100%; align-items: center; }
 
-/* Branching roadmaps — bent flowchart */
+/* Branching roadmaps ï¿½ bent flowchart */
 .branch-map { max-width: 720px; margin: 24px auto 0; background: linear-gradient(180deg, #fffef8 0%, #fdf8f0 100%); border: 1px solid rgba(237,224,204,0.7); border-radius: 24px; padding: 28px 20px 24px; }
 .branch-start { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .branch-start-dot { width: 64px; height: 64px; border-radius: 50%; background: #1a1a18; color: #ffdf8a; display: grid; place-items: center; font-size: 12px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; border: 3px solid #ffdf8a; box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
@@ -1367,7 +1382,7 @@ button.ghost:focus-visible {
 .branch-step.next .branch-step-dot { background: var(--accent); color: #fff; border-color: var(--accent); }
 @media (max-width: 720px) { .branch-grid { grid-template-columns: 1fr; } .branch-svg-wrap { display: none; } }
 
-/* Flowchart redesign — bent, branching, clean */
+/* Flowchart redesign ï¿½ bent, branching, clean */
 .flow-redesign { max-width: 760px; margin: 24px auto 0; background: linear-gradient(180deg, #fffef8 0%, #fdf8f0 100%); border: 1px solid rgba(237,224,204,0.7); border-radius: 24px; padding: 28px 20px 24px; }
 .flow-intro { text-align: center; margin-bottom: 16px; }
 .flow-start { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -1396,7 +1411,7 @@ button.ghost:focus-visible {
 .flow-merge-pill { position: relative; z-index: 1; background: var(--accent2); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding: 7px 14px; border-radius: 999px; margin-top: auto; }
 @media (max-width: 760px) { .flow-branches { grid-template-columns: 1fr; } .flow-bend, .flow-merge { display: none; } }
 
-/* Polish — flowchart */
+/* Polish ï¿½ flowchart */
 .flow-redesign { box-shadow: 0 12px 40px rgba(60,40,10,0.06); }
 .flow-start-pill { box-shadow: 0 4px 14px rgba(0,0,0,0.12); letter-spacing: 0.8px; }
 .flow-bend-label { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
@@ -1416,6 +1431,6 @@ button.ghost:focus-visible {
 .flow-branch, .branch-col { padding: 20px; }
 .flow-box { max-width: 440px; }
 .journey-map { max-width: 900px; }
-/* Less wonky buttons — centered, not full-width */
+/* Less wonky buttons ï¿½ centered, not full-width */
 .flow-branch button, .branch-col button, .flow-box button { width: auto; min-width: 140px; align-self: center; }
 .flow-branch button.primary, .branch-col button.primary { width: auto; }

@@ -1,0 +1,34 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  width: 100%;
+}
+
+.loadingText {
+  margin-top: 1rem;
+  color: var(--clr-text-secondary);
+}
+
+.errorBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: var(--clr-error-bg);
+  color: var(--clr-error);
+  border-radius: var(--radius);
+  max-width: 80%;
+  text-align: center;
+}
+
+.errorIcon {
+  font-size: 1.25rem;
+}
+
+.emptyState {
+  color: var(--clr-text-muted);
+  font-style: italic;
+}

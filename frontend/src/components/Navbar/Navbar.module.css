@@ -1,0 +1,98 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--nav-height);
+  background-color: var(--clr-surface);
+  border-bottom: 1px solid var(--clr-border);
+  z-index: 100;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 1rem;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.25rem;
+  color: var(--clr-text);
+  text-decoration: none;
+}
+
+.center {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.link {
+  text-decoration: none;
+  color: var(--clr-text-secondary);
+  font-weight: 500;
+  padding: 0.5rem;
+}
+
+.link:hover {
+  color: var(--clr-primary);
+}
+
+.activeLink {
+  text-decoration: none;
+  color: var(--clr-primary);
+  font-weight: bold;
+  padding: 0.5rem;
+  border-bottom: 2px solid var(--clr-primary);
+}
+
+.dropdownContainer {
+  position: relative;
+}
+
+.dropdownToggle {
+  background: none;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  color: var(--clr-text);
+  background-color: var(--clr-bg);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background-color: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownItem {
+  background: none;
+  border: none;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  color: var(--clr-text);
+}
+
+.dropdownItem:hover {
+  background-color: var(--clr-bg);
+}
+
+.dropdownDivider {
+  height: 1px;
+  background-color: var(--clr-border);
+  margin: 0;
+}

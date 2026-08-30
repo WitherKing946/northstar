@@ -1,0 +1,57 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+}
+
+.empty {
+  color: var(--clr-text-muted);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.listItem {
+  color: var(--clr-text);
+}
+
+.ring {
+  fill: none;
+  stroke: var(--clr-border);
+  stroke-width: 1;
+}
+
+.axis {
+  stroke: var(--clr-border);
+  stroke-width: 1;
+  stroke-dasharray: 4;
+}
+
+.filledPolygon {
+  fill: var(--clr-primary);
+  fill-opacity: 0.2;
+  stroke: var(--clr-primary);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.label {
+  font-size: 10px;
+  fill: var(--clr-text-secondary);
+  font-family: var(--font-sans);
+}

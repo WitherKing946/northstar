@@ -1,0 +1,178 @@
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  color: var(--clr-text);
+  font-size: 2rem;
+  margin: 0;
+}
+
+.layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  position: relative;
+}
+
+.timeline {
+  flex: 1;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 1rem;
+}
+
+.timelineLine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 24px;
+}
+
+.dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--clr-border);
+  background: var(--clr-surface);
+  margin-top: 1.5rem; /* Align with card title */
+  z-index: 1;
+}
+
+.dotDone {
+  border-color: var(--clr-primary);
+  background: var(--clr-primary);
+}
+
+.line {
+  flex: 1;
+  width: 2px;
+  background-color: var(--clr-border);
+  margin: 0.5rem 0;
+  min-height: 4rem;
+}
+
+.cardWrapper {
+  flex: 1;
+  padding-bottom: 2rem;
+  transition: transform 0.2s;
+}
+
+.selected {
+  transform: translateX(8px);
+}
+
+.panel {
+  flex: 0 0 400px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: calc(var(--nav-height) + 2rem);
+  max-height: calc(100vh - var(--nav-height) - 4rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--clr-border);
+  background: var(--clr-bg);
+}
+
+.panelHeader h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--clr-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--clr-text-secondary);
+}
+
+.closeBtn:hover {
+  color: var(--clr-text);
+}
+
+.panelContent {
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.reasonQuote {
+  margin: 0;
+  padding: 1rem;
+  border-left: 4px solid var(--clr-accent);
+  background: var(--clr-accent-bg);
+  color: var(--clr-text);
+  font-style: italic;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.resources h3, .chatSection h3 {
+  margin: 0 0 1rem 0;
+  color: var(--clr-text);
+  font-size: 1.125rem;
+}
+
+.resources ul {
+  list-style: disc inside;
+  margin: 0;
+  padding: 0;
+  color: var(--clr-text-secondary);
+}
+
+.resources a {
+  color: var(--clr-primary);
+  text-decoration: none;
+}
+
+.resources a:hover {
+  text-decoration: underline;
+}
+
+.chatSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    flex-direction: column;
+  }
+  .panel {
+    flex: none;
+    width: 100%;
+    position: static;
+    max-height: none;
+  }
+}

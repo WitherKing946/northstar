@@ -4,12 +4,17 @@ import { api, store } from '../api.js'
 const DOMAINS = ['All', 'web development', 'data science', 'digital marketing']
 const TYPES = ['All', 'course', 'project', 'assessment']
 
-export default function Explore({ onSelectDomain }) {
+export default function Explore({ onSelectDomain, searchQuery = '' }) {
   const [resources, setResources] = useState([])
-  const [q, setQ] = useState('')
+  const [q, setQ] = useState(searchQuery)
   const [domain, setDomain] = useState('All')
   const [type, setType] = useState('All')
+  const [skill, setSkill] = useState('All')
   const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setQ(searchQuery)
+  }, [searchQuery])
   const [enrolled, setEnrolled] = useState(() => {
     try {
       return new Set(JSON.parse(localStorage.getItem('ns.enrolled') || '[]'))
@@ -23,15 +28,18 @@ export default function Explore({ onSelectDomain }) {
     api.resources().then(setResources).catch(() => setResources([])).finally(() => setLoading(false))
   }, [])
 
+  const allSkills = useMemo(() => [...new Set(resources.flatMap((r) => r.skills_taught))].slice(0, 10), [resources])
+
   const filtered = useMemo(() => {
     return resources.filter((r) => {
       const text = `${r.title} ${r.skills_taught.join(' ')} ${r.domain}`.toLowerCase()
       if (q && !text.includes(q.toLowerCase())) return false
       if (domain !== 'All' && (r.domain || '').toLowerCase() !== domain.toLowerCase()) return false
       if (type !== 'All' && r.type !== type) return false
+      if (skill !== 'All' && !r.skills_taught.includes(skill)) return false
       return true
     })
-  }, [resources, q, domain, type])
+  }, [resources, q, domain, type, skill])
 
   async function enroll(r) {
     const learner = store.learner
@@ -73,6 +81,19 @@ export default function Explore({ onSelectDomain }) {
             </button>
           ))}
         </div>
+        {allSkills.length > 0 && (
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px', alignItems: 'center' }}>
+            <span className="muted" style={{ fontSize: '11px', fontWeight: 600 }}>Tags:</span>
+            <button className={`chip ${skill === 'All' ? 'chip-on' : ''}`} onClick={() => setSkill('All')}>
+              All
+            </button>
+            {allSkills.map((s) => (
+              <button key={s} className={`chip ${skill === s ? 'chip-on' : ''}`} onClick={() => setSkill(s)}>
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
 
         <p className="muted" style={{ marginTop: '12px', fontSize: '12px' }}>
           Showing {filtered.length} of {resources.length} resources
@@ -94,6 +115,13 @@ export default function Explore({ onSelectDomain }) {
               <p className="muted" style={{ fontSize: '12px', margin: 0 }}>
                 {r.domain ? `${r.domain} · ` : ''}Teaches: {r.skills_taught.join(', ') || '—'}
               </p>
+              <div className="chips" style={{ marginTop: '8px' }}>
+                {r.skills_taught.slice(0, 3).map((s) => (
+                  <button key={s} className={`chip ${skill === s ? 'chip-on' : ''}`} style={{ fontSize: '11px', padding: '4px 8px' }} onClick={() => setSkill(s)}>
+                    {s}
+                  </button>
+                ))}
+              </div>
               <div style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>
                 <button className={isEnrolled ? 'ghost' : 'primary'} disabled={busy === r.id || isEnrolled} onClick={() => enroll(r)} style={{ flex: 1 }}>
                   {isEnrolled ? 'Enrolled ✓' : busy === r.id ? 'Enrolling…' : 'Enroll'}

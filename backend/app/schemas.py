@@ -13,6 +13,15 @@ class LearnerCreate(BaseModel):
     time_budget: int = 5
 
 
+class LearnerUpdate(BaseModel):
+    name: str | None = None
+    interests: list[str] | None = None
+    experience_level: str | None = None
+    learning_style: str | None = None
+    time_budget: int | None = None
+
+
+
 class GoalInput(BaseModel):
     goal: str
 

@@ -16,8 +16,12 @@ async function request(url, opts = {}) {
 
 export const api = {
   createLearner: (p) => request('/learners', { method: 'POST', body: JSON.stringify(p) }),
+  updateLearner: (id, patch) =>
+    request(`/learners/${id}`, { method: 'PATCH', body: JSON.stringify(patch) }),
+  listLearners: () => request('/learners'),
   setGoal: (id, goal) =>
     request(`/learners/${id}/goals`, { method: 'POST', body: JSON.stringify({ goal }) }),
+
   generatePath: (id) => request(`/learners/${id}/paths`, { method: 'POST', body: '{}' }),
   getPath: (pid) => request(`/paths/${pid}/nodes`),
   dashboard: (lid) => request(`/learners/${lid}/dashboard`),

@@ -20,12 +20,31 @@ def create_learner(payload: schemas.LearnerCreate, db: Session = Depends(get_db)
     return learner
 
 
+@router.get("", response_model=list[schemas.LearnerOut])
+def list_learners(db: Session = Depends(get_db)):
+    return db.query(models.Learner).all()
+
+
 @router.get("/{learner_id}", response_model=schemas.LearnerOut)
 def get_learner(learner_id: int, db: Session = Depends(get_db)):
     learner = db.get(models.Learner, learner_id)
     if learner is None:
         raise HTTPException(404, "Learner not found")
     return learner
+
+
+@router.patch("/{learner_id}", response_model=schemas.LearnerOut)
+def update_learner(learner_id: int, payload: schemas.LearnerUpdate, db: Session = Depends(get_db)):
+    learner = db.get(models.Learner, learner_id)
+    if learner is None:
+        raise HTTPException(404, "Learner not found")
+    data = payload.model_dump(exclude_unset=True)
+    for key, val in data.items():
+        setattr(learner, key, val)
+    db.commit()
+    db.refresh(learner)
+    return learner
+
 
 
 @router.post("/{learner_id}/goals", response_model=schemas.ParsedGoal)

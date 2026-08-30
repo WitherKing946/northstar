@@ -1,0 +1,51 @@
+name: Discord
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        with:
+          script: |
+            const webhook = process.env.DISCORD_WEBHOOK_URL;
+            if (!webhook) { core.info("No webhook secret set; skipping"); return; }
+            const ev = context.payload;
+            const color = 0x00b0f4;
+            const repo = ev.repository;
+            let embeds;
+            if (context.eventName === 'push') {
+              const branch = context.ref.replace('refs/heads/', '');
+              const head = ev.head_commit;
+              const msg = head ? head.message.split('\n')[0] : 'no commits';
+              const commits = (ev.commits || []).length;
+              embeds = [{
+                title: `${commits} commit${commits > 1 ? 's' : ''} pushed to \`${branch}\``,
+                description: msg,
+                url: head ? `${repo.html_url}/commit/${head.id}` : repo.html_url,
+                color
+              }];
+            } else if (context.eventName === 'pull_request') {
+              const pr = ev.pull_request;
+              const action = ev.action === 'closed' ? (pr.merged ? 'MERGED' : 'closed') : ev.action;
+              embeds = [{
+                title: `PR #${pr.number}: ${pr.title}`,
+                description: `**${action.toUpperCase()}** by ${pr.user.login}\n\n${(pr.body || '').slice(0, 300)}`,
+                url: pr.html_url,
+                color: pr.merged ? 0x2ecc71 : 0x3498db
+              }];
+            } else {
+              return;
+            }
+            const res = await fetch(webhook, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ embeds })
+            });
+            if (!res.ok) core.setFailed(`Discord returned ${res.status}`);

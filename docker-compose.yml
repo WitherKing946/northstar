@@ -1,0 +1,41 @@
+# North Star demo stack
+#
+# Default: `docker compose up --build` -> backend only (SQLite file volume).
+# Add a local free LLM:
+#   `docker compose --profile llm up --build`
+#   then pull the model once: `docker compose exec ollama ollama pull qwen3:4b`
+#
+# The backend has a deterministic fallback, so it runs fine with no Ollama at all.
+# For a hosted free LLM later, set OLLAMA_BASE_URL/LLM_MODEL to any
+# OpenAI-compatible endpoint (e.g. Groq, OpenRouter) and remove the profile.
+
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: sqlite:////data/northstar.db
+      OLLAMA_BASE_URL: http://ollama:11434
+      LLM_MODEL: qwen3:4b
+      LLM_TIMEOUT: "30"
+      PORT: "8000"
+    volumes:
+      - db_data:/data
+
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["llm"]
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
+  ollama_data:

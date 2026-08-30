@@ -13,7 +13,7 @@ export default function Roadmap({ path, onRefresh, onChat }) {
   const [feedback, setFeedback] = useState({})
   const [openId, setOpenId] = useState(null)
   const [started, setStarted] = useState({})
-  const [view, setView] = useState('timeline')
+  const [view, setView] = useState('flowchart')
 
   const firstUnfinished = path.nodes.findIndex((n) => n.status !== 'done')
   const doneCount = path.nodes.filter((n) => n.status === 'done').length
@@ -58,8 +58,8 @@ export default function Roadmap({ path, onRefresh, onChat }) {
               <button className={`view-btn ${view === 'timeline' ? 'on' : ''}`} onClick={() => setView('timeline')}>
                 Timeline
               </button>
-              <button className={`view-btn ${view === 'gallery' ? 'on' : ''}`} onClick={() => setView('gallery')}>
-                Gallery
+              <button className={`view-btn ${view === 'flowchart' ? 'on' : ''}`} onClick={() => setView('flowchart')}>
+                Flowchart
               </button>
             </div>
             <button className="ghost" onClick={() => onChat()}>
@@ -164,7 +164,7 @@ export default function Roadmap({ path, onRefresh, onChat }) {
           })}
         </div>
       ) : (
-        <div className="gallery">
+        <div className="flowchart">
           {path.nodes.map((n, idx) => {
             const isDone = n.status === 'done'
             const isCurrent = idx === firstUnfinished
@@ -172,44 +172,53 @@ export default function Roadmap({ path, onRefresh, onChat }) {
             const isStarted = started[n.id]
             const meta = TYPE_META[n.resource.type] || TYPE_META.course
             const step = idx + 1
+            const isLast = idx === path.nodes.length - 1
             return (
-              <div key={n.id} className={`gallery-card ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''}`}>
-                <div className="gallery-top">
-                  <span className="gallery-step">Step {step}</span>
-                  <span className={`type type-${n.resource.type}`}>{meta.label}</span>
-                  {isDone && <span className="gallery-check">✓ Done</span>}
-                  {isCurrent && !isDone && <span className="gallery-current">Up next</span>}
-                  {isLocked && <span className="gallery-lock">🔒 Locked</span>}
+              <div key={n.id} className="flow-wrap">
+                <div className={`flow-box flow-${n.resource.type} ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''}`}>
+                  <div className="flow-head">
+                    <span className="flow-step">Step {step}</span>
+                    <span className={`type type-${n.resource.type}`}>{meta.label}</span>
+                    {isDone && <span className="flow-badge done">✓ Done</span>}
+                    {isCurrent && !isDone && <span className="flow-badge current">Up next</span>}
+                    {isLocked && <span className="flow-badge locked">🔒 Locked</span>}
+                  </div>
+                  <div className="flow-icon">{meta.icon}</div>
+                  <h4>{n.resource.title}</h4>
+                  <p className="reason">{n.reason}</p>
+                  <p className="muted" style={{ fontSize: '12px', margin: '8px 0 0' }}>
+                    {n.resource.est_hours}h · {n.resource.media_type} · Teaches: {n.resource.skills_taught.join(', ')}
+                  </p>
+                  <div className="flow-actions">
+                    {isDone ? (
+                      <div className="stars">
+                        {[1, 2, 3, 4, 5].map((r) => (
+                          <button key={r} className={`star ${feedback[n.id] >= r ? 'on' : ''}`} onClick={() => sendFeedback(n, r)}>
+                            ★
+                          </button>
+                        ))}
+                      </div>
+                    ) : isLocked ? (
+                      <span className="muted" style={{ fontSize: '13px' }}>
+                        Complete Step {step - 1} to unlock
+                      </span>
+                    ) : !isStarted ? (
+                      <button className="primary" onClick={() => handleStart(n)}>
+                        Start learning →
+                      </button>
+                    ) : (
+                      <button className="primary" disabled={busy === n.id} onClick={() => markDone(n)}>
+                        {busy === n.id ? 'Saving…' : 'Mark as finished'}
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div className="gallery-icon">{meta.icon}</div>
-                <h4>{n.resource.title}</h4>
-                <p className="reason">{n.reason}</p>
-                <p className="muted" style={{ fontSize: '12px', margin: '8px 0 0' }}>
-                  {n.resource.est_hours}h · {n.resource.media_type} · Teaches: {n.resource.skills_taught.join(', ')}
-                </p>
-                <div className="gallery-actions">
-                  {isDone ? (
-                    <div className="stars">
-                      {[1, 2, 3, 4, 5].map((r) => (
-                        <button key={r} className={`star ${feedback[n.id] >= r ? 'on' : ''}`} onClick={() => sendFeedback(n, r)}>
-                          ★
-                        </button>
-                      ))}
-                    </div>
-                  ) : isLocked ? (
-                    <span className="muted" style={{ fontSize: '13px' }}>
-                      Complete Step {step - 1} to unlock
-                    </span>
-                  ) : !isStarted ? (
-                    <button className="primary" onClick={() => handleStart(n)}>
-                      Start learning →
-                    </button>
-                  ) : (
-                    <button className="primary" disabled={busy === n.id} onClick={() => markDone(n)}>
-                      {busy === n.id ? 'Saving…' : 'Mark as finished'}
-                    </button>
-                  )}
-                </div>
+                {!isLast && (
+                  <div className="flow-connector" aria-hidden>
+                    <div className={`flow-line ${idx < doneCount ? 'filled' : ''}`} />
+                    <div className={`flow-arrow ${idx < doneCount ? 'filled' : ''}`}>▼</div>
+                  </div>
+                )}
               </div>
             )
           })}

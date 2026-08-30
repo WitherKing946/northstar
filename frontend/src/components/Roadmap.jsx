@@ -3,8 +3,8 @@ import { api } from '../api.js'
 
 const TYPE_META = {
   course: { icon: '📘', label: 'Course' },
-  project: { icon: '🛠️', label: 'Build' },
-  assessment: { icon: '◆', label: 'Checkpoint' },
+  project: { icon: '▣', label: 'Project' },
+  assessment: { icon: '✦', label: 'Checkpoint' },
 }
 
 export default function Roadmap({ path, onRefresh, onChat }) {
@@ -49,8 +49,8 @@ export default function Roadmap({ path, onRefresh, onChat }) {
       <div className="card path-header">
         <div className="flex-between">
           <div>
-            <h2>Your journey</h2>
-            <p className="muted">Follow the trail — each island unlocks the next. Progress saves automatically.</p>
+            <h2>Your path</h2>
+            <p className="muted">Work through step by step — progress saves automatically.</p>
           </div>
           <button className="ghost" onClick={() => onChat()}>
             Ask assistant
@@ -61,88 +61,68 @@ export default function Roadmap({ path, onRefresh, onChat }) {
             <div className="path-progress-fill" style={{ width: `${fillPct}%` }} />
           </div>
           <span className="muted" style={{ fontSize: '12px', fontWeight: 600 }}>
-            {doneCount}/{path.nodes.length} completed
+            {doneCount}/{path.nodes.length}
           </span>
         </div>
         {error && <p className="error">{error}</p>}
       </div>
 
-      <div className="journey-map">
-        <svg className="journey-svg" viewBox="0 0 640 1200" preserveAspectRatio="none" aria-hidden>
-          <path
-            d="M 320 0 C 120 120 520 220 320 340 C 120 460 520 560 320 680 C 120 800 520 900 320 1020"
-            fill="none"
-            stroke="#ede0cc"
-            strokeWidth="14"
-            strokeLinecap="round"
-            strokeDasharray="22 18"
-            opacity="0.7"
-          />
-          <path
-            d="M 320 0 C 120 120 520 220 320 340 C 120 460 520 560 320 680 C 120 800 520 900 320 1020"
-            fill="none"
-            stroke="url(#grad)"
-            strokeWidth="14"
-            strokeLinecap="round"
-            strokeDasharray={`${fillPct * 9} 1200`}
-            opacity="0.95"
-          />
-          <defs>
-            <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#2d6a4f" />
-              <stop offset="100%" stopColor="#34d399" />
-            </linearGradient>
-          </defs>
-        </svg>
+      <div className="timeline">
+        <div className="timeline-rail" aria-hidden>
+          <div className="timeline-rail-fill" style={{ height: `${fillPct}%` }} />
+        </div>
 
-        <div className="islands">
-          {path.nodes.map((n, idx) => {
-            const isDone = n.status === 'done'
-            const isCurrent = idx === firstUnfinished
-            const isLocked = idx > firstUnfinished && firstUnfinished !== -1
-            const isOpen = openId === n.id
-            const isStarted = started[n.id]
-            const meta = TYPE_META[n.resource.type] || TYPE_META.course
+        {path.nodes.map((n, idx) => {
+          const isDone = n.status === 'done'
+          const isCurrent = idx === firstUnfinished
+          const isLocked = idx > firstUnfinished && firstUnfinished !== -1
+          const isOpen = openId === n.id
+          const isStarted = started[n.id]
+          const meta = TYPE_META[n.resource.type] || TYPE_META.course
 
-            return (
-              <div key={n.id} className={`journey-node ${isOpen ? 'open' : ''}`}>
-                <button
-                  className={`journey-island ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''}`}
-                  onClick={() => {
-                    if (isLocked) return
-                    setOpenId(isOpen ? null : n.id)
-                  }}
-                  disabled={isLocked}
-                  aria-label={n.resource.title}
-                  aria-expanded={isOpen}
-                >
-                  <span className="journey-icon">{meta.icon}</span>
-                  {isDone && <span className="journey-check">✓</span>}
-                  {isCurrent && !isDone && <span className="journey-ring" aria-hidden />}
-                  <span className="journey-type">{meta.label}</span>
-                </button>
+          return (
+            <div
+              key={n.id}
+              className={`timeline-row ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''} ${isOpen ? 'open' : ''}`}
+            >
+              <button
+                className={`timeline-dot ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''}`}
+                onClick={() => {
+                  if (isLocked) return
+                  setOpenId(isOpen ? null : n.id)
+                }}
+                disabled={isLocked}
+                aria-label={n.resource.title}
+                title={isLocked ? 'Complete the previous step to unlock' : n.resource.title}
+              >
+                {isDone ? '✓' : <span style={{ fontSize: '16px' }}>{meta.icon}</span>}
+                {isCurrent && !isDone && <span className="dot-pulse" aria-hidden />}
+              </button>
 
-                <div className="journey-label">
-                  <span className={`journey-title ${isLocked ? 'muted' : ''}`}>{n.resource.title}</span>
-                  <span className="journey-meta muted">
+              <div
+                className={`timeline-card ${isLocked ? 'locked' : ''}`}
+                onClick={() => {
+                  if (isLocked) return
+                  setOpenId(isOpen ? null : n.id)
+                }}
+              >
+                <div className="timeline-card-top">
+                  <span className={`type type-${n.resource.type}`}>{meta.label}</span>
+                  <span className="muted" style={{ fontSize: '12px' }}>
                     {n.resource.est_hours}h · {n.resource.media_type}
                   </span>
                 </div>
+                <h4 className="timeline-title">{n.resource.title}</h4>
+                <p className="reason" style={{ marginBottom: isOpen ? '10px' : 0 }}>
+                  {n.reason}
+                </p>
 
-                {isOpen && (
-                  <div className="journey-sheet">
-                    <div className="journey-sheet-head">
-                      <span className={`type type-${n.resource.type}`}>{meta.label}</span>
-                      <button className="ghost small" onClick={() => setOpenId(null)}>
-                        Close
-                      </button>
-                    </div>
-                    <h4>{n.resource.title}</h4>
-                    <p className="reason">{n.reason}</p>
-                    <p className="muted" style={{ fontSize: '12px' }}>
+                {isOpen ? (
+                  <div className="timeline-detail">
+                    <p className="muted" style={{ fontSize: '12px', margin: '0 0 12px' }}>
                       Teaches: {n.resource.skills_taught.join(', ')}
                     </p>
-                    <div className="node-actions" style={{ marginTop: '14px' }}>
+                    <div className="node-actions">
                       {isDone ? (
                         <>
                           <span className="done-tag">Completed</span>
@@ -151,7 +131,10 @@ export default function Roadmap({ path, onRefresh, onChat }) {
                               <button
                                 key={r}
                                 className={`star ${feedback[n.id] >= r ? 'on' : ''}`}
-                                onClick={() => sendFeedback(n, r)}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  sendFeedback(n, r)
+                                }}
                               >
                                 ★
                               </button>
@@ -160,29 +143,46 @@ export default function Roadmap({ path, onRefresh, onChat }) {
                         </>
                       ) : isLocked ? (
                         <span className="muted" style={{ fontSize: '13px' }}>
-                          Locked — finish the island above first
+                          Locked — finish the step above
                         </span>
                       ) : !isStarted ? (
-                        <button className="primary" onClick={() => handleStart(n)}>
+                        <button
+                          className="primary"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleStart(n)
+                          }}
+                        >
                           Start learning →
                         </button>
                       ) : (
-                        <button className="primary" disabled={busy === n.id} onClick={() => markDone(n)}>
+                        <button
+                          className="primary"
+                          disabled={busy === n.id}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            markDone(n)
+                          }}
+                        >
                           {busy === n.id ? 'Saving…' : 'Mark as finished'}
                         </button>
                       )}
                     </div>
                     {!isDone && !isLocked && !isStarted && (
                       <p className="muted" style={{ marginTop: '8px', fontSize: '11px' }}>
-                        Dummy resource — finish to grow and unlock the next island.
+                        Dummy resource — no external link. Finish to unlock the next step.
                       </p>
                     )}
                   </div>
+                ) : (
+                  <span className="quiet-link" style={{ fontSize: '12px' }}>
+                    {isDone ? 'Completed · tap to rate' : isLocked ? 'Locked' : isStarted ? 'In progress · tap to finish' : 'Tap to open'}
+                  </span>
                 )}
               </div>
-            )
-          })}
-        </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

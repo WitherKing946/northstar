@@ -179,19 +179,24 @@ code,
 .search-box {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: var(--bg);
+  gap: 6px;
+  background: var(--card);
   border: 1px solid var(--line);
   border-radius: 999px;
-  padding: 6px 12px;
-  width: 160px;
+  padding: 4px 10px;
+  width: 130px;
+  height: 30px;
   transition: all 0.15s;
+}
+
+.search-box input {
+  font-size: 12px;
 }
 
 .search-box:focus-within {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
-  width: 200px;
+  box-shadow: 0 0 0 2px var(--accent-soft);
+  width: 170px;
 }
 
 .search-box input {

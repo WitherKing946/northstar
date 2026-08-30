@@ -32,7 +32,6 @@ export default function Roadmap({ path, onRefresh, onChat }) {
 
   function handleStart(node) {
     setStarted((s) => ({ ...s, [node.id]: true }))
-    if (node.resource.url) window.open(node.resource.url, '_blank', 'noopener,noreferrer')
   }
 
   async function sendFeedback(node, rating) {
@@ -128,10 +127,8 @@ export default function Roadmap({ path, onRefresh, onChat }) {
                               {busy === n.id ? 'Saving…' : 'Mark as finished'}
                             </button>
                           )}
-                          {!isDone && isStarted && n.resource.url && (
-                            <a href={n.resource.url} target="_blank" rel="noreferrer" className="ghost small" style={{ textDecoration: 'none', display: 'inline-block', padding: '7px 14px' }}>
-                              Reopen
-                            </a>
+                          {!isDone && isStarted && (
+                            <span className="badge">In progress — dummy resource</span>
                           )}
                         </div>
                         {!isDone && !isStarted && (

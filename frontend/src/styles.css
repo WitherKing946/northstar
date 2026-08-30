@@ -744,6 +744,10 @@ button.ghost:focus-visible {
   border-radius: 14px;
   padding: 20px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 .dash-num {
@@ -751,10 +755,14 @@ button.ghost:focus-visible {
   font-weight: 800;
   color: var(--text);
   line-height: 1;
+  margin: 0;
 }
 
 .dash-tile .muted {
-  margin-top: 4px;
+  margin: 0;
+  line-height: 1.4;
+  font-size: 12px;
+  letter-spacing: 0.2px;
 }
 
 .progress {

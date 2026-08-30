@@ -170,6 +170,7 @@ export default function Roadmap({ path, onRefresh, onChat }) {
             const isCurrent = idx === firstUnfinished
             const isLocked = idx > firstUnfinished && firstUnfinished !== -1
             const isStarted = started[n.id]
+            const isOpen = openId === n.id
             const meta = TYPE_META[n.resource.type] || TYPE_META.course
             const step = idx + 1
             const isLast = idx === path.nodes.length - 1

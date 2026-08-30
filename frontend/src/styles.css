@@ -390,29 +390,43 @@ textarea:focus {
   gap: 12px;
 }
 
-button.primary {
-  margin-top: 16px;
-  background: var(--text);
-  border: 1px solid var(--text);
-  color: #fffef8;
-  padding: 11px 22px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 600;
+/* Unified button system — all buttons share the same pill, height and type */
+button.primary,
+button.ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   font-family: 'Inter', sans-serif;
+  font-weight: 600;
   letter-spacing: -0.01em;
+  border-radius: 999px;
   cursor: pointer;
+  white-space: nowrap;
   transition:
     transform 0.12s,
-    box-shadow 0.15s,
-    background 0.15s;
-  box-shadow: 0 4px 14px rgba(46, 37, 26, 0.18);
+    box-shadow 0.14s,
+    background 0.14s,
+    border-color 0.14s,
+    color 0.14s;
+  line-height: 1;
+}
+
+button.primary {
+  background: var(--text);
+  border: 1.5px solid var(--text);
+  color: #fffef8;
+  padding: 10px 20px;
+  font-size: 14px;
+  min-height: 40px;
+  box-shadow: 0 4px 14px rgba(46, 37, 26, 0.16);
 }
 
 button.primary:hover {
   background: #3d3224;
+  border-color: #3d3224;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(46, 37, 26, 0.22);
+  box-shadow: 0 6px 18px rgba(46, 37, 26, 0.2);
 }
 
 button.primary:active {
@@ -427,33 +441,32 @@ button.primary:disabled {
   box-shadow: none;
 }
 
-button.primary.small {
-  margin-top: 0;
-  padding: 8px 16px;
+button.primary.small,
+button.ghost.small {
+  min-height: 32px;
+  padding: 6px 14px;
   font-size: 13px;
 }
 
 button.primary.accent {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
+  background: var(--text);
+  border-color: var(--text);
+  color: #fffef8;
 }
 
 button.primary.accent:hover {
-  background: var(--accent-hover);
+  background: #3d3224;
+  border-color: #3d3224;
 }
 
 button.ghost {
   background: var(--card);
   border: 1.5px solid var(--line);
   color: var(--text);
-  padding: 8px 16px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  transition: all 0.15s;
+  padding: 10px 20px;
+  font-size: 14px;
+  min-height: 40px;
+  box-shadow: none;
 }
 
 button.ghost:hover {
@@ -461,13 +474,16 @@ button.ghost:hover {
   background: var(--bg2);
 }
 
-button.ghost.small {
-  padding: 7px 14px;
-  font-size: 12px;
-}
-
 button.ghost:active {
   transform: scale(0.98);
+}
+
+button.primary:focus-visible,
+button.ghost:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px var(--accent-soft),
+    0 4px 14px rgba(46, 37, 26, 0.16);
 }
 
 .error {

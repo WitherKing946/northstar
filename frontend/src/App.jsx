@@ -8,6 +8,42 @@ import Explore from './components/Explore.jsx'
 import Goal from './components/Goal.jsx'
 import Profile from './components/Profile.jsx'
 
+function NavIcon({ name }) {
+  const icons = {
+    dashboard: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+        <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+        <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+        <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+      </svg>
+    ),
+    path: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <circle cx="3.5" cy="8" r="2" stroke="currentColor" strokeWidth="1.3" />
+        <circle cx="12.5" cy="3.5" r="2" stroke="currentColor" strokeWidth="1.3" />
+        <circle cx="12.5" cy="12.5" r="2" stroke="currentColor" strokeWidth="1.3" />
+        <path d="M5.5 8H10.5M10.5 5.2L7.2 8L10.5 10.8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+    explore: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="1.3" />
+        <path d="M8 2.5V13.5M2.5 8H13.5M4.2 4.2L11.8 11.8M11.8 4.2L4.2 11.8" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.7" />
+      </svg>
+    ),
+    assistant: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <path d="M2.5 3.5H13.5V10.5H5L2.5 13V3.5Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+        <circle cx="6" cy="7" r="0.9" fill="currentColor" />
+        <circle cx="8.5" cy="7" r="0.9" fill="currentColor" />
+        <circle cx="11" cy="7" r="0.9" fill="currentColor" />
+      </svg>
+    ),
+  }
+  return <span style={{ display: 'grid', placeItems: 'center', opacity: 0.85 }}>{icons[name]}</span>
+}
+
 export default function App() {
   const [learner, setLearner] = useState(store.learner)
   const [path, setPath] = useState(store.path)
@@ -111,7 +147,7 @@ export default function App() {
 
           <div className="nav-center">
             <button className={`nav-tab ${tab === 'dashboard' ? 'on' : ''}`} onClick={() => setTab('dashboard')}>
-              Dashboard
+              <NavIcon name="dashboard" /> Dashboard
             </button>
             <button
               className={`nav-tab ${tab === 'roadmap' ? 'on' : ''}`}
@@ -119,20 +155,17 @@ export default function App() {
               disabled={!hasPath}
               title={!hasPath ? 'Create a goal first' : ''}
             >
-              My Path
+              <NavIcon name="path" /> My Path
             </button>
             <button className={`nav-tab ${tab === 'explore' ? 'on' : ''}`} onClick={() => setTab('explore')}>
-              Explore
+              <NavIcon name="explore" /> Explore
             </button>
             <button
               className={`nav-tab ${tab === 'chat' ? 'on' : ''}`}
               onClick={() => hasPath && setTab('chat')}
               disabled={!hasPath}
             >
-              Assistant
-            </button>
-            <button className={`nav-tab ${tab === 'profile' ? 'on' : ''}`} onClick={() => setTab('profile')}>
-              Profile
+              <NavIcon name="assistant" /> Assistant
             </button>
           </div>
 

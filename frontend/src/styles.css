@@ -124,44 +124,49 @@ code,
 .nav-center {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   flex: 1;
   justify-content: center;
 }
 
 .nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   background: transparent;
-  border: 0;
+  border: 1px solid transparent;
   color: var(--muted);
-  padding: 8px 16px;
-  border-radius: 10px;
+  padding: 7px 14px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
+  font-family: 'Inter', sans-serif;
   transition: all 0.15s;
   position: relative;
+  white-space: nowrap;
 }
 
 .nav-tab:hover {
   color: var(--text);
   background: var(--bg2);
+  border-color: var(--line);
 }
 
 .nav-tab.on {
   color: var(--text);
   background: var(--accent-soft);
+  border-color: #fde68a;
   font-weight: 600;
 }
 
+.nav-tab:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .nav-tab.on::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 16px;
-  right: 16px;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 999px;
+  display: none;
 }
 
 .nav-right {

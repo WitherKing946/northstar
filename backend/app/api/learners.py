@@ -33,6 +33,23 @@ def get_learner(learner_id: int, db: Session = Depends(get_db)):
     return learner
 
 
+@router.post("/{learner_id}/enroll")
+def enroll_course(learner_id: int, payload: schemas.EnrollInput, db: Session = Depends(get_db)):
+    learner = db.get(models.Learner, learner_id)
+    if learner is None:
+        raise HTTPException(404, "Learner not found")
+    resource = db.get(models.Resource, payload.resource_id)
+    if resource is None:
+        raise HTTPException(404, "Resource not found")
+    existing = db.query(models.Progress).filter_by(learner_id=learner_id, resource_id=payload.resource_id).first()
+    if existing:
+        existing.status = "in_progress"
+    else:
+        db.add(models.Progress(learner_id=learner_id, resource_id=payload.resource_id, status="in_progress"))
+    db.commit()
+    return {"ok": True, "resource_id": payload.resource_id}
+
+
 @router.patch("/{learner_id}", response_model=schemas.LearnerOut)
 def update_learner(learner_id: int, payload: schemas.LearnerUpdate, db: Session = Depends(get_db)):
     learner = db.get(models.Learner, learner_id)

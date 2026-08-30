@@ -114,8 +114,8 @@ export default function Roadmap({ path, onRefresh, onChat }) {
               <button className={`view-btn ${view === 'timeline' ? 'on' : ''}`} onClick={() => setView('timeline')}>
                 Timeline
               </button>
-              <button className={`view-btn ${view === 'branches' ? 'on' : ''}`} onClick={() => setView('branches')}>
-                Roadmaps
+              <button className={`view-btn ${view === 'flowchart' ? 'on' : ''}`} onClick={() => setView('flowchart')}>
+                Flowchart
               </button>
             </div>
             <button className="ghost" onClick={() => onChat()}>
@@ -220,40 +220,48 @@ export default function Roadmap({ path, onRefresh, onChat }) {
           })}
         </div>
       ) : (
-        <div className="branch-map">
-          <div className="branch-start">
-            <div className="branch-start-dot">You</div>
-            <div className="branch-start-line" />
-            <div className="branch-decision">
-              <span>Choose your road</span>
-            </div>
+        <div className="flow-redesign">
+          <div className="flow-intro">
+            <p className="muted" style={{ textAlign: 'center', fontSize: '13px' }}>
+              Your current road is highlighted. The other branches are previews of similar goals — switch anytime, progress saves.
+            </p>
           </div>
 
-          <div className="branch-svg-wrap" aria-hidden>
-            <svg viewBox="0 0 640 80" preserveAspectRatio="none" className="branch-svg">
-              <path d="M 320 0 C 320 28, 110 28, 110 80" fill="none" stroke="#e8ddd2" strokeWidth="3" strokeLinecap="round" />
-              <path d="M 320 0 C 320 28, 320 28, 320 80" fill="none" stroke="#e8ddd2" strokeWidth="3" strokeLinecap="round" />
-              <path d="M 320 0 C 320 28, 530 28, 530 80" fill="none" stroke="#e8ddd2" strokeWidth="3" strokeLinecap="round" />
+          <div className="flow-start">
+            <div className="flow-start-pill">Start — your goal</div>
+            <div className="flow-start-sub muted">{path.goal}</div>
+          </div>
+
+          <div className="flow-bend">
+            <svg viewBox="0 0 640 60" preserveAspectRatio="none" className="flow-bend-svg" aria-hidden>
+              <path d="M 320 0 L 320 20 C 320 32 320 32 180 46 C 110 54 110 58 110 60" fill="none" stroke="#e8ddd2" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M 320 0 L 320 20 C 320 32 320 32 320 46 L 320 60" fill="none" stroke="#e8ddd2" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M 320 0 L 320 20 C 320 32 320 32 460 46 C 530 54 530 58 530 60" fill="none" stroke="#e8ddd2" strokeWidth="2.5" strokeLinecap="round" />
+              <circle cx="320" cy="8" r="4" fill="#c07a1a" />
             </svg>
+            <div className="flow-bend-label">Choose your direction</div>
           </div>
 
-          <div className="branch-grid">
+          <div className="flow-branches">
             {BRANCHES.map((b) => {
               const isActive = b.domain === learnerDomain || path.goal.toLowerCase().includes(b.domain.split(' ')[0])
+              const activeDone = isActive ? doneCount : 0
               return (
-                <div key={b.id} className={`branch-col ${isActive ? 'active' : ''}`}>
-                  <div className="branch-head" style={{ borderColor: b.color }}>
-                    <span className="branch-icon">{b.icon}</span>
+                <div key={b.id} className={`flow-branch ${isActive ? 'active' : ''}`}>
+                  <div className="flow-branch-head" style={{ borderTopColor: b.color }}>
+                    <span className="flow-branch-icon">{b.icon}</span>
                     <h4>{b.label}</h4>
-                    {isActive && <span className="branch-badge">You are here</span>}
+                    {isActive && <span className="flow-branch-badge">You are here</span>}
                   </div>
-                  <div className="branch-steps">
+                  <div className="flow-branch-track">
                     {b.steps.map((s, i) => {
-                      const isStepDone = isActive && i < doneCount
+                      const done = isActive && i < activeDone
+                      const next = isActive && i === activeDone
                       return (
-                        <div key={s} className={`branch-step ${isStepDone ? 'done' : ''} ${isActive && i === doneCount ? 'next' : ''}`}>
-                          <span className="branch-step-dot">{isStepDone ? '✓' : i + 1}</span>
-                          <span className="branch-step-title">{s}</span>
+                        <div key={s} className={`flow-step ${done ? 'done' : ''} ${next ? 'next' : ''}`}>
+                          <span className="flow-step-dot">{done ? '✓' : i + 1}</span>
+                          <span className="flow-step-title">{s}</span>
+                          {next && <span className="flow-step-next">• next</span>}
                         </div>
                       )
                     })}
@@ -264,19 +272,21 @@ export default function Roadmap({ path, onRefresh, onChat }) {
                     disabled={switching !== null}
                     onClick={() => switchBranch(b)}
                   >
-                    {switching === b.id ? 'Switching…' : isActive ? 'Current road' : `Switch to ${b.label} →`}
+                    {switching === b.id ? 'Switching…' : isActive ? 'Current road' : `Try ${b.label} →`}
                   </button>
-                  <p className="muted" style={{ fontSize: '11px', marginTop: '8px', textAlign: 'center' }}>
-                    Dummy road — preview of a similar goal
-                  </p>
                 </div>
               )
             })}
           </div>
 
-          <p className="muted" style={{ textAlign: 'center', marginTop: '18px', fontSize: '12px' }}>
-            Pick a road to regenerate your path. Your current progress is saved; milestones re-track automatically.
-          </p>
+          <div className="flow-merge">
+            <svg viewBox="0 0 640 60" preserveAspectRatio="none" className="flow-bend-svg" aria-hidden>
+              <path d="M 110 0 L 110 14 C 110 28 110 32 320 46 L 320 60" fill="none" stroke="#e8ddd2" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M 320 0 L 320 60" fill="none" stroke="#e8ddd2" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M 530 0 L 530 14 C 530 28 530 32 320 46 L 320 60" fill="none" stroke="#e8ddd2" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+            <div className="flow-merge-pill">Continue — milestones track automatically</div>
+          </div>
         </div>
       )}
     </div>

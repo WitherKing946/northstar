@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: northstar-backend
+    env: python
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        value: https://agihkjarakpwetvknzdk.supabase.co
+      - key: SUPABASE_KEY
+        value: sb_publishable_kAzJI_UNq98ymDNJLj1_qw_2DdnMwNc
+
+  - type: web
+    name: northstar-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_SUPABASE_URL
+        value: https://agihkjarakpwetvknzdk.supabase.co
+      - key: VITE_SUPABASE_ANON_KEY
+        value: sb_publishable_kAzJI_UNq98ymDNJLj1_qw_2DdnMwNc

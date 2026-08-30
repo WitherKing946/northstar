@@ -136,8 +136,8 @@ class LLMService:
         if "stuck" in q or "struggle" in q or "hard" in q or "difficult" in q:
             return "If you're feeling stuck, try reviewing the previous prerequisite step or switching your preferred media style (e.g. video vs hands-on project) in your Profile. Marking completed steps also re-ranks your remaining path."
 
-        if "how long" in q or "time" in q or "hours" in q:
-            return f"Your roadmap is paced based on your weekly time budget and course estimated hours. Each step displays estimated completion hours on your roadmap view."
+        if "how long" in q or "time" in q or "hours" in q or "weeks" in q:
+            return f"Your roadmap completion depends on your weekly time budget and course estimated hours. Each milestone card on your My Path tab lists exact estimated hours, and completing steps updates your overall progress automatically."
 
         if "next" in q or "recommend" in q:
             first_step = path_summary.split(";")[0] if path_summary else "the first node on your roadmap"

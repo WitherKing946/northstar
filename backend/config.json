@@ -1,0 +1,5 @@
+{
+  "GROQ_API_KEY": "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",
+  "GROQ_MODEL": "openai/gpt-oss-120b",
+  "LLM_TIMEOUT": "60"
+}

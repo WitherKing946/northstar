@@ -30,7 +30,7 @@ North Star uses the Groq cloud API as its AI provider. The key is stored in `bac
 
 ```json
 {
-  "GROQ_API_KEY": "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",
+  "GROQ_API_KEY": "key given in instructions",
   "GROQ_MODEL": "openai/gpt-oss-120b",
   "LLM_TIMEOUT": "60"
 }

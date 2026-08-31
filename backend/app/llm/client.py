@@ -11,46 +11,55 @@ from .. import models
 
 
 class LLMService:
-    """Ollama local primary, embedded deterministic fallback.
-
-    Ollama is always tried first. If it's down or slow, the embedded
-    grounded fallback kicks in so the app never breaks.
+    """Real LLM via Groq (hosted cloud). Embedded deterministic fallback provides
+    a last-resort guard so the app never breaks while Groq is unavailable.
     """
 
     def __init__(self, db: Session):
         self.db = db
 
-    def _ollama_chat(
+    def _chat(
         self,
         messages: list[dict],
         *,
         temperature: float = 0.2,
         max_tokens: int = 512,
     ) -> str | None:
-        """Call Ollama's OpenAI-compatible chat endpoint."""
-        base = settings.OLLAMA_BASE_URL.rstrip("/")
-        if not base:
-            return None
+        """Call Groq. Returns raw completion or None on any failure."""
         try:
-            resp = httpx.post(
-                f"{base}/v1/chat/completions",
-                headers={"Content-Type": "application/json"},
-                json={
-                    "model": settings.LLM_MODEL,
-                    "messages": messages,
-                    "temperature": temperature,
-                    "max_tokens": max_tokens,
-                },
-                timeout=settings.LLM_TIMEOUT,
-            )
-            resp.raise_for_status()
-            return resp.json()["choices"][0]["message"]["content"]
+            return self._groq_chat(messages, temperature=temperature, max_tokens=max_tokens)
         except Exception:
             return None
 
+    def _groq_chat(
+        self,
+        messages: list[dict],
+        *,
+        temperature: float,
+        max_tokens: int,
+    ) -> str | None:
+        if not settings.GROQ_API_KEY:
+            return None
+        resp = httpx.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {settings.GROQ_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": settings.GROQ_MODEL,
+                "messages": messages,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+            },
+            timeout=settings.LLM_TIMEOUT,
+        )
+        resp.raise_for_status()
+        return resp.json()["choices"][0]["message"]["content"]
+
     # -- goal parsing -----------------------------------------------------
     def parse_goal(self, goal_text: str) -> dict[str, Any]:
-        live = self._ollama_chat(
+        live = self._chat(
             [
                 {
                     "role": "system",
@@ -122,7 +131,7 @@ class LLMService:
 
     # -- explanations -----------------------------------------------------
     def explain_node(self, title: str, reason: str, goal: str) -> str:
-        live = self._ollama_chat(
+        live = self._chat(
             [
                 {
                     "role": "system",
@@ -148,7 +157,7 @@ class LLMService:
 
     # -- Q&A --------------------------------------------------------------
     def answer_question(self, question: str, goal: str, path_summary: str) -> str:
-        live = self._ollama_chat(
+        live = self._chat(
             [
                 {
                     "role": "system",
